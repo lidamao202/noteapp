@@ -34,6 +34,7 @@ import { reactive } from 'vue'
 import axios from 'axios';
 import { useRouter } from 'vue-router'
 import { userStore } from '@/stores/userStore'
+import axiosInstance from '../JwtInterceptor';
 
 export default {
 
@@ -42,7 +43,7 @@ export default {
     return {
       tableData: [],
       userId: user.id,
-      input:""
+      input: ""
     }
   },
   mounted() {
@@ -52,7 +53,7 @@ export default {
   methods: {
     onAddNew: function ($event) {
       console.log("onAddNew");
-      this.$router.push({ name: 'AddUpdateNote',isView: false })
+      this.$router.push({ name: 'AddUpdateNote', isView: false })
     },
     deleteRow: function (index) {
       if (confirm("Are you sure you want to delete?") == true) {
@@ -73,18 +74,20 @@ export default {
       this.$router.push({ name: 'AddUpdateNote', query: { noteId: this.tableData[index].id, isView: true } })
     },
     getAll: function () {
-      console.log(this.userId)
-      axios.get(`https://localhost:59916/api/note/getAll/${this.userId}`)
+      let user = userStore();
+     
+      axiosInstance.get(`/note/getAll/${user.id}`)
         .then(response => {
           this.tableData = response.data;
         })
         .catch(error => {
           console.log(error);
         });
+
     },
     search: function () {
       console.log(this.userId)
-      axios.get(`https://localhost:59916/api/note/search?userId=${this.userId}&title=${this.input}`)
+      axiosInstance.get(`/note/search?userId=${this.userId}&title=${this.input}`)
         .then(response => {
           this.tableData = response.data;
         })

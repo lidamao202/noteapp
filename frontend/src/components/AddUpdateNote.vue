@@ -19,6 +19,7 @@ import { reactive } from 'vue'
 import axios from 'axios';
 import { useRouter } from 'vue-router'
 import { userStore } from '@/stores/userStore'
+import axiosInstance from '../JwtInterceptor';
 
 export default {
 
@@ -46,7 +47,7 @@ export default {
             let noteId=this.$router.currentRoute._value.query.noteId;
             if (noteId != undefined && noteId != "") {
                 console.log("update")
-                axios.put(`https://localhost:59916/api/note/${this.$router.currentRoute._value.query.noteId}`, {
+                axiosInstance.put(`/note/${this.$router.currentRoute._value.query.noteId}`, {
                     title: this.title,
                     content: this.content,
                     userId: this.userId,
@@ -61,7 +62,7 @@ export default {
                     .catch((error) => { console.log(error) })
 
             } else {
-                axios.post(`https://localhost:59916/api/note`, {
+                axiosInstance.post(`/note`, {
                     title: this.title,
                     content: this.content,
                     userId: this.userId
@@ -80,7 +81,7 @@ export default {
         },
         getUser: function () {
 
-            axios.get(`https://localhost:59916/api/note/getOne/${this.$router.currentRoute._value.query.noteId}`)
+            axiosInstance.get(`/note/getOne/${this.$router.currentRoute._value.query.noteId}`)
                 .then(response => {
                     const note = response.data;
                     this.id = note.id;

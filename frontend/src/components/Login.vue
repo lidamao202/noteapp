@@ -1,10 +1,10 @@
 <template>
-  <el-form :model="form" label-width="auto" style="max-width: 600px">
+  <el-form label-width="auto" style="max-width: 600px">
     <el-form-item label="User name">
-      <el-input v-model="form.userName" />
+      <el-input v-model="userName" />
     </el-form-item>
     <el-form-item label="Password">
-      <el-input v-model="form.password" />
+      <el-input v-model="password" type="password"/>
     </el-form-item>
   
     <el-form-item>
@@ -14,37 +14,51 @@
   </el-form>
 </template>
 
-<script lang="ts" setup>
+<script>
 
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios';
 import { userStore } from '@/stores/userStore'
-//import userStore from '../store/userStore'
+import { jwtDecode } from "jwt-decode"
 
+export default{
+  
+  data(){
+    
+    return{
+      userName: "",
+      password: ""
+    }
+  },
+  methods:{
+    onSubmit:function(){
+      axios.get(`https://localhost:59916/api/account/login?username=${this.userName}&password=${this.password}`)
+      .then(response => {
+
+        const decoded = jwtDecode(response.data);
+        console.log(decoded)
+        let user = userStore();
+        user.id=decoded.Id;
+        user.userName=decoded.email;
+        localStorage.setItem('jwt_token',response.data);
+        
+        this.$router.push({ path: '/noteList' });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    },
+    onRegister:function(){
+      router.push({ path: '/register' });
+    }
+  }
+}
 const form = reactive(
   {
     userName: "",
     password: ""
   }
 )
-const router = useRouter();
-const user = userStore();
-const onSubmit = () => {
 
-  axios.get(`https://localhost:59916/api/account/login?username=${form.userName}&password=${form.password}`)
-  .then(response => {
-    console.log(response.data);
-    user.id=response.data.id;
-    user.userName=response.data.userName;
-    
-    router.push({ path: '/noteList' });
-  })
-  .catch(error => {
-    console.log(error);
-  });
-}
-const onRegister= () => {
-  router.push({ path: '/register' });
-}
 </script>

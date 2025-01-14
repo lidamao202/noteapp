@@ -1,20 +1,23 @@
 ﻿using Dapper;
 using noteapi.Dto;
+using noteapi.Models;
 
 namespace noteapi.Repository
 {
     public class UserRepository : IUserRepository
     {
         private readonly DapperContext _context;
-        public UserRepository(DapperContext context) { 
+        
+        public UserRepository(DapperContext context,IConfiguration configuration) { 
             _context = context; 
+            
         }
-        public async Task<UserResponse> Get(string username)
+        public async Task<User> Get(string username)
         {
             var query = "SELECT * FROM [user] WHERE username=@username";
             using (var connection = _context.CreateConnection())
             {
-                var user = await connection.QueryFirstAsync<UserResponse>(query, new
+                var user = await connection.QueryFirstAsync<User>(query, new
                 {
                     username = username,
                 });
@@ -37,5 +40,6 @@ namespace noteapi.Repository
                 });
             }
         }
+
     }
 }

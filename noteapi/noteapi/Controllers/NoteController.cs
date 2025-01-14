@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using noteapi.Dto;
 using noteapi.Repository;
 
@@ -7,7 +8,7 @@ using noteapi.Repository;
 namespace noteapi.Controllers
 {
     [Route("api/note")]
-    [ApiController]
+    [ApiController,Authorize]
     public class NoteController : ControllerBase
     {
         private readonly INoteRepository _noteRepository;

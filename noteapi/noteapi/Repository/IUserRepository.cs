@@ -6,6 +6,6 @@ namespace noteapi.Repository
     public interface IUserRepository
     {
         void Save(UserRequest userRequest);
-        Task<UserResponse> Get(string username);
+        Task<User> Get(string username);
     }
 }
