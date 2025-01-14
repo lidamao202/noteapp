@@ -20,6 +20,7 @@ import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios';
 import { userStore } from '@/stores/userStore'
+//import userStore from '../store/userStore'
 
 const form = reactive(
   {
@@ -28,13 +29,14 @@ const form = reactive(
   }
 )
 const router = useRouter();
+const user = userStore();
 const onSubmit = () => {
 
   axios.get(`https://localhost:59916/api/account/login?username=${form.userName}&password=${form.password}`)
   .then(response => {
     console.log(response.data);
-    userStore.id=response.data.id;
-    userStore.userName=response.data.userName;
+    user.id=response.data.id;
+    user.userName=response.data.userName;
     
     router.push({ path: '/noteList' })
   })

@@ -13,7 +13,7 @@ const router = createRouter({
     },
     {
       path: '/noteList',
-      name: 'note list',
+      name: 'notelist',
       component: NoteListView,
     },
     {

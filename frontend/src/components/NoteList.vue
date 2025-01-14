@@ -1,11 +1,35 @@
 <template>
   <el-button type="primary" @click="onAddNew">Add New</el-button>
   <el-table :data="tableData" >
-    <el-table-column prop="id" label="Id" width="180" />
     <el-table-column prop="title" label="Title" width="180" />
     <el-table-column prop="content" label="Content" />
-    <el-table-column prop="date_Created" label="Created Date" />
-    <el-table-column prop="date_Updated" label="Update Date" />
+    <!-- <el-table-column prop="date_Created" label="Created Date" />
+    <el-table-column prop="date_Updated" label="Update Date" /> -->
+    <el-table-column fixed="right" label="Operations" min-width="120">
+      <template #default="scope">
+        <el-button
+          link
+          type="primary"
+          size="small"
+          @click.prevent="editRow(scope.$index)"
+        >
+          Edit
+        </el-button>
+      </template>
+    </el-table-column>
+    <el-table-column fixed="right" label="Operations" min-width="120">
+      <template #default="scope">
+        <el-button
+          link
+          type="primary"
+          size="small"
+          @click.prevent="deleteRow(scope.$index)"
+        >
+          Remove
+        </el-button>
+      </template>
+    </el-table-column>
+
   </el-table>
 </template>
 
@@ -22,19 +46,36 @@ export default {
   },
   mounted(){
     console.log("getAll note")
-    axios.get(`https://localhost:59916/api/note/getAll`)
-    .then(response => {
-      this.tableData = response.data;
-      console.log(response.data);
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    this.getAll();
   },
   methods:{
     onAddNew: function($event){
       console.log("onAddNew");
-      this.$router.push({ name: 'AddUpdateNote' , query: { userId:""}})
+      this.$router.push({ name: 'AddUpdateNote'})
+    },
+    deleteRow:function(index)  {
+      if(confirm("Are you sure you want to delete?") == true){
+        axios.delete(`https://localhost:59916/api/note/${this.tableData[index].id}`)
+        .then(response => {
+          this.getAll();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      }
+
+    },
+    editRow:function(index){
+      this.$router.push({ name: 'AddUpdateNote', query:{noteId:this.tableData[index].id}})
+    },
+    getAll: function(){
+      axios.get(`https://localhost:59916/api/note/getAll`)
+      .then(response => {
+        this.tableData = response.data;
+      })
+      .catch(error => {
+        console.log(error);
+      });
     }
   }
 }
