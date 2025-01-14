@@ -14,6 +14,7 @@ namespace noteapi.Migrations
                 {
                     databaseService.CreateDatabase("Developer");
                     migrationService.ListMigrations();
+                    //migrationService.MigrateDown(202401130001);
                     migrationService.MigrateUp();
                 }
                 catch

@@ -1,4 +1,5 @@
 ﻿using FluentMigrator;
+using FluentMigrator.SqlServer;
 
 namespace noteapi.Migrations
 {
@@ -19,7 +20,9 @@ namespace noteapi.Migrations
                 .WithColumn("date_updated").AsDateTime().NotNullable();
 
             Create.Table("note")
-                .WithColumn("title").AsString(200).NotNullable().PrimaryKey()
+                .WithColumn("id").AsString(100).NotNullable().PrimaryKey()
+                //.WithColumn("ids").AsString(100).NotNullable().PrimaryKey()
+                .WithColumn("title").AsString(200).NotNullable()
                 .WithColumn("content").AsString(100).NotNullable()
                 .WithColumn("date_created").AsDateTime().NotNullable()
                 .WithColumn("date_updated").AsDateTime().NotNullable();

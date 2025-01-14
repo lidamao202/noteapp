@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using noteapi.Dto;
-using noteapi.Models;
 
 namespace noteapi.Repository
 {
@@ -12,21 +11,15 @@ namespace noteapi.Repository
         }
         public async Task<UserResponse> Get(string username)
         {
-            var query = "SELECT * FROM [user]";
+            var query = "SELECT * FROM [user] WHERE username=@username";
             using (var connection = _context.CreateConnection())
             {
-                var users = await connection.QueryAsync<User>(query);
-                var user = users.ToList().First();
-                if (user != null)
+                var user = await connection.QueryFirstAsync<UserResponse>(query, new
                 {
-                    var userRes = new UserResponse()
-                    {
-                        UserName = username,
-                    };
-                    return userRes;
-                }
+                    username = username
+                });
+                return user;
             }
-            return null;
         }
 
         public async void Save(UserRequest userRequest)

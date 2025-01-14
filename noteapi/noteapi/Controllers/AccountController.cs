@@ -6,7 +6,7 @@ using noteapi.Repository;
 
 namespace noteapi.Controllers
 {
-    [Route("api/Account")]
+    [Route("api/account")]
     [ApiController]
     public class AccountController : ControllerBase
     {

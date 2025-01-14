@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<DapperContext>();
 builder.Services.AddSingleton<Database>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<INoteRepository, NoteRepository>();
 
 builder.Services.AddLogging(c => c.AddFluentMigratorConsole())
       .AddFluentMigratorCore()
@@ -25,7 +26,6 @@ builder.Services.AddLogging(c => c.AddFluentMigratorConsole())
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
