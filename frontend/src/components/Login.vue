@@ -9,7 +9,7 @@
   
     <el-form-item>
       <el-button type="primary" @click="onSubmit">Submit</el-button>
-      <el-button>Register</el-button>
+      <el-button @click="onRegister" >Register</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -38,10 +38,13 @@ const onSubmit = () => {
     user.id=response.data.id;
     user.userName=response.data.userName;
     
-    router.push({ path: '/noteList' })
+    router.push({ path: '/noteList' });
   })
   .catch(error => {
     console.log(error);
   });
+}
+const onRegister= () => {
+  router.push({ path: '/register' });
 }
 </script>

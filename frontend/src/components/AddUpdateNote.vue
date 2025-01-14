@@ -43,7 +43,8 @@ export default {
     methods: {
         onSubmit: function ($event) {
             console.log("onSubmit");
-            if (this.$router.currentRoute._value.query.noteId != "") {
+            let noteId=this.$router.currentRoute._value.query.noteId;
+            if (noteId != undefined && noteId != "") {
                 console.log("update")
                 axios.put(`https://localhost:59916/api/note/${this.$router.currentRoute._value.query.noteId}`, {
                     title: this.title,
