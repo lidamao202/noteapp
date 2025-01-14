@@ -1,81 +1,96 @@
 <template>
   <el-button type="primary" @click="onAddNew">Add New</el-button>
-  <el-table :data="tableData" >
+
+  <el-input v-model="input" style="max-width: 600px" placeholder="Please input" class="input-with-select">
+    <template #prepend>
+      <el-button @click="search">Search</el-button>
+    </template>
+  </el-input>
+
+  <el-table :data="tableData">
     <el-table-column prop="title" label="Title" width="180" />
     <el-table-column prop="content" label="Content" />
-    <!-- <el-table-column prop="date_Created" label="Created Date" />
-    <el-table-column prop="date_Updated" label="Update Date" /> -->
+    <el-table-column prop="date_Created" label="Created Date" />
     <el-table-column fixed="right" label="Operations" min-width="120">
       <template #default="scope">
-        <el-button
-          link
-          type="primary"
-          size="small"
-          @click.prevent="editRow(scope.$index)"
-        >
+        <el-button link type="primary" size="small" @click.prevent="viewRow(scope.$index)">
+          View
+        </el-button>
+        <el-button link type="primary" size="small" @click.prevent="editRow(scope.$index)">
           Edit
         </el-button>
-      </template>
-    </el-table-column>
-    <el-table-column fixed="right" label="Operations" min-width="120">
-      <template #default="scope">
-        <el-button
-          link
-          type="primary"
-          size="small"
-          @click.prevent="deleteRow(scope.$index)"
-        >
+        <el-button link type="primary" size="small" @click.prevent="deleteRow(scope.$index)">
           Remove
         </el-button>
       </template>
     </el-table-column>
 
+
   </el-table>
 </template>
 
-<script >
+<script>
 import { reactive } from 'vue'
 import axios from 'axios';
 import { useRouter } from 'vue-router'
+import { userStore } from '@/stores/userStore'
 
 export default {
-  data(){
-    return{
-      tableData:[]
+
+  data() {
+    const user = userStore();
+    return {
+      tableData: [],
+      userId: user.id,
+      input:""
     }
   },
-  mounted(){
+  mounted() {
     console.log("getAll note")
     this.getAll();
   },
-  methods:{
-    onAddNew: function($event){
+  methods: {
+    onAddNew: function ($event) {
       console.log("onAddNew");
-      this.$router.push({ name: 'AddUpdateNote'})
+      this.$router.push({ name: 'AddUpdateNote',isView: false })
     },
-    deleteRow:function(index)  {
-      if(confirm("Are you sure you want to delete?") == true){
+    deleteRow: function (index) {
+      if (confirm("Are you sure you want to delete?") == true) {
         axios.delete(`https://localhost:59916/api/note/${this.tableData[index].id}`)
+          .then(response => {
+            this.getAll();
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
+
+    },
+    editRow: function (index) {
+      this.$router.push({ name: 'AddUpdateNote', query: { noteId: this.tableData[index].id, isView: false } })
+    },
+    viewRow: function (index) {
+      this.$router.push({ name: 'AddUpdateNote', query: { noteId: this.tableData[index].id, isView: true } })
+    },
+    getAll: function () {
+      console.log(this.userId)
+      axios.get(`https://localhost:59916/api/note/getAll/${this.userId}`)
         .then(response => {
-          this.getAll();
+          this.tableData = response.data;
         })
         .catch(error => {
           console.log(error);
         });
-      }
-
     },
-    editRow:function(index){
-      this.$router.push({ name: 'AddUpdateNote', query:{noteId:this.tableData[index].id}})
-    },
-    getAll: function(){
-      axios.get(`https://localhost:59916/api/note/getAll`)
-      .then(response => {
-        this.tableData = response.data;
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    search: function () {
+      console.log(this.userId)
+      axios.get(`https://localhost:59916/api/note/search?userId=${this.userId}&title=${this.input}`)
+        .then(response => {
+          this.tableData = response.data;
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 }
@@ -85,8 +100,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 @media (min-width: 1024px) {
   .item {
     margin-top: 0;

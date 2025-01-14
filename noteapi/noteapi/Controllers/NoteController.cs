@@ -17,12 +17,27 @@ namespace noteapi.Controllers
 
 
         [HttpGet]
-        [Route("getAll")]
-        public async Task<IActionResult> GetAll()
+        [Route("getAll/{userId}")]
+        public async Task<IActionResult> GetAll(string userId)
         {
             try
             {
-                var list = await _noteRepository.GetAll();
+                var list = await _noteRepository.GetAll(userId);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("search")]
+        public async Task<IActionResult> Search(string userId, string title="")
+        {
+            try
+            {
+                var list = await _noteRepository.Search(userId, title);
                 return Ok(list);
             }
             catch (Exception ex)

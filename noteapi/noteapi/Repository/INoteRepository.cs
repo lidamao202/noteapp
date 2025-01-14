@@ -7,7 +7,8 @@ namespace noteapi.Repository
         Task Save(NoteRequest noteRequest);
         Task Update(string id, NoteRequest noteRequest);
         Task Delete(string id);
-        Task<IEnumerable<NoteResponse>> GetAll();
+        Task<IEnumerable<NoteResponse>> GetAll(string userId);
+        Task<IEnumerable<NoteResponse>> Search(string userId,string title);
         Task<NoteResponse> GetOne(string id);
     }
 }

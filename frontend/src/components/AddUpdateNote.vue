@@ -8,7 +8,7 @@
         </el-form-item>
 
         <el-form-item>
-            <el-button type="primary" @click="onSubmit">Submit</el-button>
+            <el-button v-if="!isView" v-model="isView" type="primary" @click="onSubmit">Submit</el-button>
             <el-button type="primary" @click="onBackClick">Back</el-button>
         </el-form-item>
     </el-form>
@@ -31,11 +31,13 @@ export default {
             title: "",
             content: "",
             userId: user.id,
+            isView:false
             //nodeId:this.$router.currentRoute._value.query.noteId
         }
     },
     mounted() {
-        console.log(this.$router.currentRoute._value.query.noteId)
+        this.isView = this.$router.currentRoute._value.query.isView;
+        //console.log(this.$router.currentRoute._value.query.noteId)
         this.getUser();
     },
     methods: {

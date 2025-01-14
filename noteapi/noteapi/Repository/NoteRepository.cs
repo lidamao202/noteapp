@@ -22,12 +22,15 @@ namespace noteapi.Repository
             }
         }
 
-        public async Task<IEnumerable<NoteResponse>> GetAll()
+        public async Task<IEnumerable<NoteResponse>> GetAll(string userId)
         {
-            var query = "SELECT * FROM note";
+            var query = "SELECT * FROM note WHERE userId=@UserId";
             using (var connection = _context.CreateConnection())
             {
-                var result = await connection.QueryAsync<NoteResponse>(query);
+                var result = await connection.QueryAsync<NoteResponse>(query, new
+                {
+                    UserId = userId
+                });
                 var notes = result.ToList();
                 return notes;
             }
@@ -60,6 +63,22 @@ namespace noteapi.Repository
                     date_updated = DateTime.Now,
                     userId=noteRequest.UserId,
                 });
+            }
+        }
+
+        public async Task<IEnumerable<NoteResponse>> Search(string userId,string title)
+        {
+            //var query = "SELECT * FROM note WHERE userId=@UserId and (title like '%@Title%')";
+            var query = "SELECT * FROM note WHERE userId=@UserId and title like @Title";
+            using (var connection = _context.CreateConnection())
+            {
+                var result = await connection.QueryAsync<NoteResponse>(query, new
+                {
+                    UserId = userId,
+                    Title = "%"+title+"%"
+                });
+                var notes = result.ToList();
+                return notes;
             }
         }
 
