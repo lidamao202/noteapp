@@ -16,7 +16,7 @@ namespace noteapi.Repository
             {
                 var user = await connection.QueryFirstAsync<UserResponse>(query, new
                 {
-                    username = username
+                    username = username,
                 });
                 return user;
             }
@@ -24,11 +24,12 @@ namespace noteapi.Repository
 
         public async void Save(UserRequest userRequest)
         {
-            var query = "insert into [user](username,password,date_created,date_updated) values(@userName,@password,@date_created,@date_updated)";
+            var query = "insert into [user](id,username,password,date_created,date_updated) values(@Id,@userName,@password,@date_created,@date_updated)";
             using (var connection = _context.CreateConnection())
             {
                     
                 var users = await connection.ExecuteAsync(query, new { 
+                    Id=Guid.NewGuid().ToString(),
                     userName=userRequest.UserName,
                     password=userRequest.Password,
                     date_created=DateTime.Now,

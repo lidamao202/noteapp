@@ -48,7 +48,7 @@ namespace noteapi.Repository
 
         public async Task Save(NoteRequest noteRequest)
         {
-            var query = "INSERT INTO note (id,title,content,date_created,date_updated) values(@id,@title,@content,@date_created,@date_updated)";
+            var query = "INSERT INTO note (id,title,content,date_created,date_updated,userId) values(@id,@title,@content,@date_created,@date_updated,@userId)";
             using (var connection = _context.CreateConnection())
             {
                 await connection.ExecuteAsync(query, new
@@ -57,7 +57,8 @@ namespace noteapi.Repository
                     title = noteRequest.Title,
                     content = noteRequest.Content,
                     date_created=DateTime.Now,
-                    date_updated = DateTime.Now
+                    date_updated = DateTime.Now,
+                    userId=noteRequest.UserId,
                 });
             }
         }

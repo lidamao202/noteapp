@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Login from '../components/Login.vue'
+import NoteList from '../components/NoteList.vue'
 </script>
 
 <template>
   <main>
-    <Login />
+    <NoteList />
   </main>
 </template>
