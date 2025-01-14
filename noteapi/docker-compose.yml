@@ -1,0 +1,15 @@
+services:
+  db:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=MyPass@word
+      - MSSQL_PID=Developer
+
+  noteapi:
+    image: ${DOCKER_REGISTRY-}noteapi
+    build:
+      context: .
+      dockerfile: noteapi/Dockerfile
+    depends_on:
+      - db
