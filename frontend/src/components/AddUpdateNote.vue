@@ -8,7 +8,7 @@
         </el-form-item>
 
         <el-form-item>
-            <el-button v-if="!isView" v-model="isView" type="primary" @click="onSubmit">Submit</el-button>
+            <el-button v-f="!isView"  type="primary" @click="onSubmit">Submit</el-button>
             <el-button type="primary" @click="onBackClick">Back</el-button>
         </el-form-item>
     </el-form>
@@ -25,21 +25,25 @@ export default {
 
     data() {
 
-        const user = userStore();
-
+        //const user = userStore();
+        const userId = localStorage.getItem('id');
+        this.isView = this.$router.currentRoute._value.query.isView;
         return {
             id: "",
             title: "",
             content: "",
-            userId: user.id,
-            isView:false
+            userId: userId,
+            isView:true
             //nodeId:this.$router.currentRoute._value.query.noteId
         }
     },
     mounted() {
         this.isView = this.$router.currentRoute._value.query.isView;
-        //console.log(this.$router.currentRoute._value.query.noteId)
+        console.log(this.$router.currentRoute._value.query.isView)
         this.getUser();
+    },
+    updated(){
+        this.isView = this.$router.currentRoute._value.query.isView;
     },
     methods: {
         onSubmit: function ($event) {
@@ -81,7 +85,8 @@ export default {
         },
         getUser: function () {
 
-            axiosInstance.get(`/note/getOne/${this.$router.currentRoute._value.query.noteId}`)
+            if(this.$router.currentRoute._value.query.noteId){
+                axiosInstance.get(`/note/getOne/${this.$router.currentRoute._value.query.noteId}`)
                 .then(response => {
                     const note = response.data;
                     this.id = note.id;
@@ -91,6 +96,8 @@ export default {
                 .catch(error => {
                     console.log(error);
                 });
+            }
+     
         },
         onBackClick: function ($event) {
             this.$router.push({ name: 'notelist' })

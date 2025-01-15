@@ -14,51 +14,58 @@
   </el-form>
 </template>
 
-<script>
+<script lang="ts" >
 
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios';
 import { userStore } from '@/stores/userStore'
 import { jwtDecode } from "jwt-decode"
+import { ref } from 'vue';
+import axiosInstance from '../JwtInterceptor';
 
-export default{
-  
-  data(){
-    
-    return{
-      userName: "",
-      password: ""
-    }
-  },
-  methods:{
-    onSubmit:function(){
-      axios.get(`https://localhost:59916/api/account/login?username=${this.userName}&password=${this.password}`)
+export default {
+  setup() {
+    const router = useRouter();
+    let userName = ref<string>('');
+    let password = ref<string>('');
+
+
+
+    const onSubmit = (): void => {
+      axiosInstance.get(`/account/login?username=${userName.value}&password=${password.value}`)
       .then(response => {
 
         const decoded = jwtDecode(response.data);
-        console.log(decoded)
-        let user = userStore();
-        user.id=decoded.Id;
-        user.userName=decoded.email;
+        // console.log(decoded)
+        // let user = userStore();
+        // user.setId(decoded.Id);
+        // user.setUserName=(decoded.email);
+        // console.log(user.id)
         localStorage.setItem('jwt_token',response.data);
+        localStorage.setItem('id',decoded.Id);
+        localStorage.setItem('userName',decoded.email);
         
-        this.$router.push({ path: '/noteList' });
+        router.push({ path: '/noteList' });
       })
       .catch(error => {
         console.log(error);
       });
-    },
-    onRegister:function(){
+    };
+
+    const onRegister = () => {
       router.push({ path: '/register' });
     }
+
+    return {
+      onSubmit,
+      userName,
+      password,
+      onRegister
+
+    };
   }
 }
-const form = reactive(
-  {
-    userName: "",
-    password: ""
-  }
-)
+
 
 </script>

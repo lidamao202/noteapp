@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://localhost:59916/api', // Replace with your API's base URL
+  baseURL: 'https://localhost:59003/api', // Replace with your API's base URL
 });
 
 // JWT Interceptor

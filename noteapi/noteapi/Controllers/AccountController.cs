@@ -58,10 +58,10 @@ namespace noteapi.Controllers
         {
             try
             {
-                if (userRequest == null)
-                {
-                    return BadRequest();
-                }
+                //if (userRequest == null)
+                //{
+                //    return BadRequest();
+                //}
                 _user.Save(userRequest);
 
                 return StatusCode(201, "Create Successfully");

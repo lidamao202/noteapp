@@ -1,20 +1,51 @@
-<script setup lang="ts">
-import { RouterLink, RouterView  } from 'vue-router'
-</script>
+
 
 <template>
-  <header>
+  <div>
 
-    <div class="wrapper">
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-      </nav>
-    </div>
-  </header>
-
+  </div>
+  <el-menu
+    mode="horizontal">
+    <el-menu-item index="1">
+      <RouterLink to="/">Home</RouterLink>
+    </el-menu-item>
+    <el-menu-item index="2" v-if="isAuthenticated" @click="onLogout">Logout</el-menu-item>
+  </el-menu>
   <RouterView />
 </template>
+
+<script lang="ts">
+import { RouterLink, RouterView  } from 'vue-router'
+import { ref ,onMounted } from 'vue';
+import { useRouter } from 'vue-router'
+
+export default {
+  setup() {
+    const isAuthenticated = ref<boolean>(false);
+    const router = useRouter();
+      
+    const onLogout=()=>{
+      console.log("logout")
+      localStorage.removeItem('jwt_token');
+      router.push({ name: 'home'});
+  
+      
+    }
+
+    onMounted(() => {
+      console.log(localStorage.getItem('jwt_token'))
+      isAuthenticated.value = localStorage.getItem('jwt_token')??undefined;
+    
+    });
+
+    return {
+      isAuthenticated,
+      onLogout
+    };
+  }
+}
+</script>
+
 
 <style scoped>
 header {

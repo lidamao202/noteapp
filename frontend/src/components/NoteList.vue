@@ -39,10 +39,8 @@ import axiosInstance from '../JwtInterceptor';
 export default {
 
   data() {
-    const user = userStore();
     return {
       tableData: [],
-      userId: user.id,
       input: ""
     }
   },
@@ -57,7 +55,7 @@ export default {
     },
     deleteRow: function (index) {
       if (confirm("Are you sure you want to delete?") == true) {
-        axios.delete(`https://localhost:59916/api/note/${this.tableData[index].id}`)
+        axiosInstance.delete(`/note/${this.tableData[index].id}`)
           .then(response => {
             this.getAll();
           })
@@ -74,9 +72,11 @@ export default {
       this.$router.push({ name: 'AddUpdateNote', query: { noteId: this.tableData[index].id, isView: true } })
     },
     getAll: function () {
-      let user = userStore();
-     
-      axiosInstance.get(`/note/getAll/${user.id}`)
+      // let user = userStore();
+
+      const id = localStorage.getItem('id');
+
+      axiosInstance.get(`/note/getAll/${id}`)
         .then(response => {
           this.tableData = response.data;
         })
@@ -86,8 +86,10 @@ export default {
 
     },
     search: function () {
-      console.log(this.userId)
-      axiosInstance.get(`/note/search?userId=${this.userId}&title=${this.input}`)
+      // let user = userStore();
+      // console.log(this.userId)
+      const id = localStorage.getItem('id');
+      axiosInstance.get(`/note/search?userId=${id}&title=${this.input}`)
         .then(response => {
           this.tableData = response.data;
         })
