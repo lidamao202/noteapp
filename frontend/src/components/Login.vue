@@ -56,7 +56,7 @@ export default {
         localStorage.setItem('jwt_token',response.data);
         localStorage.setItem('id',decoded.UserId);
         localStorage.setItem('userName',decoded.email);
-    
+        window.location.href="/noteList";
         router.push({ path: '/noteList' });
       })
       .catch(error => {

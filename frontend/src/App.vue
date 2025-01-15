@@ -27,8 +27,9 @@ export default {
     const onLogout=()=>{
       console.log("logout")
       localStorage.removeItem('jwt_token');
+      
+      window.location.href="/";
       router.push({ name: 'home'});
-  
       
     }
 
