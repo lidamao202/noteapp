@@ -1,5 +1,8 @@
 <template>
-  <el-form label-width="auto" style="max-width: 600px">
+  <div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="w-full max-w-sm p-8 bg-white rounded-lg shadow-lg">
+      <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">Login</h2>
+      <el-form label-width="auto" style="max-width: 600px">
     <el-form-item label="User name">
       <el-input v-model="userName" />
     </el-form-item>
@@ -8,10 +11,22 @@
     </el-form-item>
   
     <el-form-item>
-      <el-button type="primary" @click="onSubmit">Submit</el-button>
-      <el-button @click="onRegister" >Register</el-button>
+      <el-button 
+      class="w-full py-2 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      type="primary" @click="onSubmit">Submit</el-button>
+      <!-- <el-button @click="onRegister" class="mt-4 text-center">Register</el-button> -->
+     <div class="mt-4 text-center">
+      <el-link type="primary"
+      @click="onRegister"
+        href="#" class="text-sm text-indigo-600 hover:underline"
+      >Register</el-link>
+     </div>
     </el-form-item>
   </el-form>
+    </div>
+
+  </div>
+
 </template>
 
 <script lang="ts" >
@@ -37,15 +52,11 @@ export default {
       .then(response => {
 
         const decoded = jwtDecode(response.data);
-        // console.log(decoded)
-        // let user = userStore();
-        // user.setId(decoded.Id);
-        // user.setUserName=(decoded.email);
-        // console.log(user.id)
+
         localStorage.setItem('jwt_token',response.data);
-        localStorage.setItem('id',decoded.Id);
+        localStorage.setItem('id',decoded.UserId);
         localStorage.setItem('userName',decoded.email);
-        
+    
         router.push({ path: '/noteList' });
       })
       .catch(error => {

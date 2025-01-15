@@ -1,5 +1,8 @@
 <template>
-    <el-form :model="form" label-width="auto" style="max-width: 600px">
+    <div class="flex justify-center p-8">
+        <div class="w-full max-w-sm p-8 bg-white rounded-lg">
+            <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">Register</h2>
+            <el-form :model="form" label-width="auto" style="max-width: 600px">
         <el-form-item label="User name">
             <el-input v-model="form.userName" />
         </el-form-item>
@@ -13,6 +16,11 @@
             <el-button type="primary" @click="onSubmit">Submit</el-button>
         </el-form-item>
     </el-form>
+        </div>
+        
+
+    </div>
+
 </template>
 
 <script lang="ts" setup>
