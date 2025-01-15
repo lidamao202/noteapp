@@ -1,14 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using noteapi.Dto;
-using noteapi.Models;
-using noteapi.Repository;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using noteapi.Services;
+using System.Threading.Tasks;
 
 namespace noteapi.Controllers
 {
@@ -16,39 +10,37 @@ namespace noteapi.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IUserRepository _user;
-        private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
         private readonly ILogger<AccountController> _logger;
-        public AccountController(IUserRepository user, IConfiguration configuration, ILogger<AccountController> logger)
+
+        public AccountController(IUserService userService, ILogger<AccountController> logger)
         {
-            _user = user;
-            _configuration = configuration;
+            _userService = userService;
             _logger = logger;
         }
+
         [HttpGet]
         [Route("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string username,string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
-            try
+            _logger.LogInformation("Login method called with username: {Username}", username);
+
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                if (username == null || password == null)
-                {
-                    return BadRequest();
-                }
-                var user = await _user.Get(username);
-                if (user.Password == password)
-                {
-                    string token = GenerateJSONWebToken(user);
-                    return Ok(token);
-                }
+                _logger.LogWarning("Username or password is null or empty.");
+                return BadRequest("Username and password are required.");
+            }
+
+            var token = await _userService.Authenticate(username, password);
+            if (token == null)
+            {
+                _logger.LogWarning("Authentication failed for username: {Username}", username);
                 return Unauthorized();
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,"login");
-                return StatusCode(500, ex.Message);
-            }
+
+            _logger.LogInformation("User {Username} authenticated successfully.", username);
+            return Ok(token);
         }
 
         [HttpPost]
@@ -56,50 +48,17 @@ namespace noteapi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Post([FromBody] UserRequest userRequest)
         {
-            try
-            {
-                //if (userRequest == null)
-                //{
-                //    return BadRequest();
-                //}
-                _user.Save(userRequest);
+            _logger.LogInformation("Register method called for username: {Username}", userRequest.UserName);
 
-                return StatusCode(201, "Create Successfully");
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for username: {Username}", userRequest.UserName);
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "login");
-                return StatusCode(500, ex.Message);
-            }
+
+            await _userService.Register(userRequest);
+            _logger.LogInformation("User {Username} registered successfully.", userRequest.UserName);
+            return StatusCode(201, "Create Successfully");
         }
-
-
-        private string GenerateJSONWebToken(User user)
-        {
-            var issuer = _configuration["Jwt:Issuer"];
-            var audience = _configuration["Jwt:Audience"];
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] ?? "");
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                new Claim("Id", Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.UserName),
-                new Claim("Role","User"),
-                new Claim("UserId",user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())}),
-                Expires = DateTime.UtcNow.AddMinutes(15),
-                Issuer = issuer,
-                Audience = audience,
-                //SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var jwtToken = tokenHandler.WriteToken(token);
-            var stringToken = tokenHandler.WriteToken(token);
-            return stringToken;
-        }
-
     }
 }

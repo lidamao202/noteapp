@@ -1,0 +1,24 @@
+2025-01-15 16:08:32.872 +00:00 [INF] Migrations
+2025-01-15 16:08:32.916 +00:00 [WRN] 202401130001: InitialTables_202401130001 (current)
+2025-01-15 16:08:32.937 +00:00 [WRN] Using an in-memory repository. Keys will not be persisted to storage.
+2025-01-15 16:08:32.938 +00:00 [WRN] Neither user profile nor HKLM registry available. Using an ephemeral key repository. Protected data will be unavailable when application exits.
+2025-01-15 16:08:32.949 +00:00 [INF] Creating key {85aa8a40-ac27-4e03-9f2c-e3f75fb003aa} with creation date 2025-01-15 16:08:32Z, activation date 2025-01-15 16:08:32Z, and expiration date 2025-04-15 16:08:32Z.
+2025-01-15 16:08:32.958 +00:00 [WRN] No XML encryptor configured. Key {85aa8a40-ac27-4e03-9f2c-e3f75fb003aa} may be persisted to storage in unencrypted form.
+2025-01-15 16:08:33.064 +00:00 [INF] Now listening on: http://[::]:8080
+2025-01-15 16:08:33.065 +00:00 [INF] Now listening on: https://[::]:8081
+2025-01-15 16:08:33.065 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-01-15 16:08:33.066 +00:00 [INF] Hosting environment: Development
+2025-01-15 16:08:33.066 +00:00 [INF] Content root path: /app
+2025-01-15 16:09:30.185 +00:00 [INF] Request starting HTTP/2 GET https://localhost:65062/swagger/index.html - null null
+2025-01-15 16:09:30.284 +00:00 [INF] Request finished HTTP/2 GET https://localhost:65062/swagger/index.html - 200 null text/html;charset=utf-8 100.0456ms
+2025-01-15 16:09:30.342 +00:00 [INF] Request starting HTTP/2 GET https://localhost:65062/swagger/v1/swagger.json - null null
+2025-01-15 16:09:30.421 +00:00 [INF] Request finished HTTP/2 GET https://localhost:65062/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 78.5511ms
+2025-01-15 16:09:35.984 +00:00 [INF] Request starting HTTP/2 GET https://localhost:65062/api/account/login?username=test&password=123 - null null
+2025-01-15 16:09:36.052 +00:00 [INF] Executing endpoint 'noteapi.Controllers.AccountController.Login (noteapi)'
+2025-01-15 16:09:36.073 +00:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(System.String, System.String) on controller noteapi.Controllers.AccountController (noteapi).
+2025-01-15 16:09:36.088 +00:00 [INF] Login method called with username: test
+2025-01-15 16:09:36.155 +00:00 [INF] User test authenticated successfully.
+2025-01-15 16:09:36.162 +00:00 [INF] Executing OkObjectResult, writing value of type 'System.String'.
+2025-01-15 16:09:36.166 +00:00 [INF] Executed action noteapi.Controllers.AccountController.Login (noteapi) in 89.7546ms
+2025-01-15 16:09:36.167 +00:00 [INF] Executed endpoint 'noteapi.Controllers.AccountController.Login (noteapi)'
+2025-01-15 16:09:36.168 +00:00 [INF] Request finished HTTP/2 GET https://localhost:65062/api/account/login?username=test&password=123 - 200 null text/plain; charset=utf-8 184.8154ms

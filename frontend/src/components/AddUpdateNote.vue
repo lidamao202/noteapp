@@ -75,7 +75,7 @@ export default {
                 axiosInstance.post(`/note`, {
                     title: this.title,
                     content: this.content,
-                    userId: this.userId
+                    userId: userId
                 }, {
                     headers: {
                         "Content-Type": "application/json"

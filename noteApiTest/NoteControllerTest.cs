@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using noteapi.Controllers;
 using noteapi.Dto;
@@ -11,197 +13,133 @@ namespace noteApiTest
     {
         private readonly NoteController _noteController;
         private readonly Mock<INoteRepository> _noteRepository;
+        private readonly Mock<ILogger<NoteController>> _logger;
+
         public NoteControllerTest()
         {
             _noteRepository = new Mock<INoteRepository>();
-            _noteController = new NoteController(_noteRepository.Object);
-        }
-        [Fact]
-        public async void TestGetAllNotes()
-        {
-           
-            List<NoteResponse> dataList = new List<NoteResponse>()
+            _logger = new Mock<ILogger<NoteController>>();
+            _noteController = new NoteController(_noteRepository.Object, _logger.Object);
+
+            // Set up HttpContext with JWT claims
+            var httpContext = new DefaultHttpContext();
+            var claims = new Dictionary<string, string>
+                {
+                    { "UserId", "1" }
+                };
+            httpContext.Items["JwtClaims"] = claims;
+            _noteController.ControllerContext = new ControllerContext
             {
-                    new NoteResponse()
-                {
-                    Id="1",
-                    Title="Artiec",
-                    Content="The coldest place in the world",
-                    userId="1",
-                },
-                new NoteResponse()
-                {
-                    Id="2",
-                    Title="School",
-                    Content="The place we go to study sth",
-                    userId="1",
-                }
+                HttpContext = httpContext
             };
-            IEnumerable<NoteResponse> dataEnumerable = dataList;
-            Task<IEnumerable<NoteResponse>> task = Task.FromResult(dataEnumerable);
-            var taskList = new List<Task<IEnumerable<NoteResponse>>>() { task };
+        }
 
+        [Fact]
+        public async Task TestGetAllNotes_Success()
+        {
+            // Arrange
+            var userId = "1";
+            var notes = new List<NoteResponse>
+                {
+                    new NoteResponse { Id = "1", Title = "Note 1", Content = "Content 1", userId = userId },
+                    new NoteResponse { Id = "2", Title = "Note 2", Content = "Content 2", userId = userId }
+                };
 
-            _noteRepository.Setup(s => s.GetAll("1")).Returns(task);
-            var result = await _noteController.GetAll("1");
-            
+            _noteRepository.Setup(repo => repo.GetAll(userId)).ReturnsAsync(notes);
+
+            // Act
+            var result = await _noteController.GetAll();
+
+            // Assert
             var actionResult = Assert.IsType<OkObjectResult>(result);
-            var NoteResponseData = Assert.IsType<List<NoteResponse>>(actionResult.Value);
-            Assert.Equal(dataEnumerable.ElementAt(0).Title, NoteResponseData.ElementAt(0).Title);
+            var returnedNotes = Assert.IsType<List<NoteResponse>>(actionResult.Value);
+            Assert.Equal(notes.Count, returnedNotes.Count);
         }
 
         [Fact]
-        public async void TestSearchNote()
+        public async Task TestSearchNotes_Success()
         {
-
-            List<NoteResponse> dataList = new List<NoteResponse>()
-            {
-                    new NoteResponse()
+            // Arrange
+            var userId = "1";
+            var title = "Note";
+            var notes = new List<NoteResponse>
                 {
-                    Id="1",
-                    Title="Artiec",
-                    Content="The coldest place in the world",
-                    userId="1",
-                },
-                new NoteResponse()
-                {
-                    Id="2",
-                    Title="School",
-                    Content="The place we go to study sth",
-                    userId="1",
-                }
-            };
-            IEnumerable<NoteResponse> dataEnumerable = dataList;
-            Task<IEnumerable<NoteResponse>> task = Task.FromResult(dataEnumerable);
-            var taskList = new List<Task<IEnumerable<NoteResponse>>>() { task };
+                    new NoteResponse { Id = "1", Title = "Note 1", Content = "Content 1", userId = userId },
+                    new NoteResponse { Id = "2", Title = "Note 2", Content = "Content 2", userId = userId }
+                };
 
+            _noteRepository.Setup(repo => repo.Search(userId, title)).ReturnsAsync(notes);
 
-            _noteRepository.Setup(s => s.Search("1","o")).Returns(task);
-            var result = await _noteController.Search("1","o");
+            // Act
+            var result = await _noteController.Search(title);
 
+            // Assert
             var actionResult = Assert.IsType<OkObjectResult>(result);
-            var NoteResponseData = Assert.IsType<List<NoteResponse>>(actionResult.Value);
-            Assert.Equal(dataEnumerable.ElementAt(0).Content, NoteResponseData.ElementAt(0).Content);
+            var returnedNotes = Assert.IsType<List<NoteResponse>>(actionResult.Value);
+            Assert.Equal(notes.Count, returnedNotes.Count);
         }
 
         [Fact]
-        public async void TestGetOneNote()
+        public async Task TestGetOneNote_Success()
         {
+            // Arrange
+            var noteId = "1";
+            var note = new NoteResponse { Id = noteId, Title = "Note 1", Content = "Content 1", userId = "1" };
 
-            List<NoteResponse> dataList = new List<NoteResponse>()
-            {
-                    new NoteResponse()
-                {
-                    Id="1",
-                    Title="Artiec",
-                    Content="The coldest place in the world",
-                    userId="1",
-                },
-                new NoteResponse()
-                {
-                    Id="2",
-                    Title="School",
-                    Content="The place we go to study sth",
-                    userId="1",
-                }
-            };
-            NoteResponse dataEnumerable = dataList[0];
-            Task<NoteResponse> task = Task.FromResult(dataEnumerable);
+            _noteRepository.Setup(repo => repo.GetOne(noteId)).ReturnsAsync(note);
 
+            // Act
+            var result = await _noteController.GetOne(noteId);
 
-            _noteRepository.Setup(s => s.GetOne("1")).Returns(task);
-            var result = await _noteController.Search("1", "o");
-
+            // Assert
             var actionResult = Assert.IsType<OkObjectResult>(result);
-            var NoteResponseData = Assert.IsType<NoteResponse[]>(actionResult.Value);
-            Assert.Equal(dataEnumerable.Content, NoteResponseData[0].Content);
+            var returnedNote = Assert.IsType<NoteResponse>(actionResult.Value);
+            Assert.Equal(noteId, returnedNote.Id);
         }
 
         [Fact]
-        public async void TestPostNote()
+        public async Task TestPostNote_Success()
         {
+            // Arrange
+            var noteRequest = new NoteRequest { Title = "New Note", Content = "New Content", UserId = "1" };
 
-   
-            var noteRequest = new NoteRequest()
-            {
-                Title = "School",
-                Content = "The place we go to study sth",
-                UserId = "1",
-            };
+            _noteRepository.Setup(repo => repo.Save(noteRequest)).Returns(Task.CompletedTask);
 
-
-
-            _noteRepository.Setup(s => s.Save(noteRequest)).Returns(Task.CompletedTask);
+            // Act
             var result = await _noteController.Post(noteRequest);
 
+            // Assert
             Assert.IsType<OkResult>(result);
         }
 
         [Fact]
-        public async void TestPutNote()
+        public async Task TestPutNote_Success()
         {
-            List<NoteResponse> dataList = new List<NoteResponse>()
-            {
-                    new NoteResponse()
-                {
-                    Id="1",
-                    Title="Artiec",
-                    Content="The coldest place in the world",
-                    userId="1",
-                },
-                new NoteResponse()
-                {
-                    Id="2",
-                    Title="Update School",
-                    Content="The place we go to study sth",
-                    userId="1",
-                }
-            };
-            NoteResponse dataEnumerable = dataList[0];
-            Task<NoteResponse> task = Task.FromResult(dataEnumerable);
+            // Arrange
+            var noteId = "1";
+            var noteRequest = new NoteRequest { Title = "Updated Note", Content = "Updated Content", UserId = "1" };
 
-            var noteRequest = new NoteRequest()
-            {
-                
-                Title = "Update School",
-                Content = "The place we go to study sth",
-                UserId = "1",
-            };
+            _noteRepository.Setup(repo => repo.Update(noteId, noteRequest)).Returns(Task.CompletedTask);
 
+            // Act
+            var result = await _noteController.Put(noteId, noteRequest);
 
-
-            _noteRepository.Setup(s => s.Update("1",noteRequest)).Returns(Task.CompletedTask);
-            var result = await _noteController.Put("1",noteRequest);
-
+            // Assert
             Assert.IsType<OkResult>(result);
         }
 
         [Fact]
-        public async void TestDeleteNote()
+        public async Task TestDeleteNote_Success()
         {
-            List<NoteResponse> dataList = new List<NoteResponse>()
-            {
-                    new NoteResponse()
-                {
-                    Id="1",
-                    Title="Artiec",
-                    Content="The coldest place in the world",
-                    userId="1",
-                },
-                new NoteResponse()
-                {
-                    Id="2",
-                    Title="Update School",
-                    Content="The place we go to study sth",
-                    userId="1",
-                }
-            };
-            NoteResponse dataEnumerable = dataList[0];
-            Task<NoteResponse> task = Task.FromResult(dataEnumerable);
+            // Arrange
+            var noteId = "1";
 
-            _noteRepository.Setup(s => s.Delete("1")).Returns(Task.CompletedTask);
-            var result = await _noteController.Delete("1");
+            _noteRepository.Setup(repo => repo.Delete(noteId)).Returns(Task.CompletedTask);
 
+            // Act
+            var result = await _noteController.Delete(noteId);
+
+            // Assert
             Assert.IsType<OkResult>(result);
         }
     }

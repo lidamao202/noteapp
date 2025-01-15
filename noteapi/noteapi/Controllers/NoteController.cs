@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using noteapi.Dto;
+using noteapi.Models;
 using noteapi.Repository;
+using System.IdentityModel.Tokens.Jwt;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,97 +14,115 @@ namespace noteapi.Controllers
     public class NoteController : ControllerBase
     {
         private readonly INoteRepository _noteRepository;
-        public NoteController(INoteRepository noteRepository) {
+        private readonly ILogger<NoteController> _logger;
+
+        public NoteController(INoteRepository noteRepository, ILogger<NoteController> logger)
+        {
             _noteRepository = noteRepository;
+            _logger = logger;
         }
 
-
         [HttpGet]
-        [Route("getAll/{userId}")]
-        public async Task<IActionResult> GetAll(string userId)
+        [Route("getAll")]
+        public async Task<IActionResult> GetAll()
         {
-            try
+            _logger.LogInformation("GetAll method called.");
+
+            if (HttpContext.Items["JwtClaims"] is not Dictionary<string, string> claims)
             {
-                var list = await _noteRepository.GetAll(userId);
-                return Ok(list);
+                _logger.LogWarning("No valid token found.");
+                return Unauthorized(new { Message = "No valid token found" });
             }
-            catch (Exception ex)
+
+            var userId = claims.GetValueOrDefault("UserId");
+
+            if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogWarning("UserId is null or empty.");
+                return Unauthorized(new { Message = "Invalid UserId" });
             }
+
+            var list = await _noteRepository.GetAll(userId);
+            _logger.LogInformation("GetAll method completed successfully.");
+            return Ok(list);
         }
 
         [HttpGet]
         [Route("search")]
-        public async Task<IActionResult> Search(string userId, string title="")
+        public async Task<IActionResult> Search(string title = "")
         {
-            try
+            _logger.LogInformation("Search method called with title: {Title}", title);
+
+            if (HttpContext.Items["JwtClaims"] is not Dictionary<string, string> claims)
             {
-                var list = await _noteRepository.Search(userId, title);
-                return Ok(list);
+                _logger.LogWarning("No valid token found.");
+                return Unauthorized(new { Message = "No valid token found" });
             }
-            catch (Exception ex)
+
+            var userId = claims.GetValueOrDefault("UserId");
+
+            if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogWarning("UserId is null or empty.");
+                return Unauthorized(new { Message = "Invalid UserId" });
             }
+
+            var list = await _noteRepository.Search(userId, title);
+            _logger.LogInformation("Search method completed successfully.");
+            return Ok(list);
         }
 
         [HttpGet]
         [Route("getOne/{id}")]
         public async Task<IActionResult> GetOne(string id)
         {
-            try
-            {
-                var note = await _noteRepository.GetOne(id);
-                return Ok(note);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            _logger.LogInformation("GetOne method called with id: {Id}", id);
+
+            var note = await _noteRepository.GetOne(id);
+            _logger.LogInformation("GetOne method completed successfully.");
+            return Ok(note);
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] NoteRequest noteRequest)
         {
-            try
+            _logger.LogInformation("Post method called.");
+
+            if (!ModelState.IsValid)
             {
-                await _noteRepository.Save(noteRequest);
-                return Ok();
+                _logger.LogWarning("Invalid model state.");
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+
+            await _noteRepository.Save(noteRequest);
+            _logger.LogInformation("Post method completed successfully.");
+            return Ok();
         }
 
-        // PUT api/<NoteController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, [FromBody] NoteRequest noteRequest)
         {
-            try
+            _logger.LogInformation("Put method called with id: {Id}", id);
+
+            if (!ModelState.IsValid)
             {
-                await _noteRepository.Update(id, noteRequest);
-                return Ok();
+                _logger.LogWarning("Invalid model state.");
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+
+            await _noteRepository.Update(id, noteRequest);
+            _logger.LogInformation("Put method completed successfully.");
+            return Ok();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            try
-            {
-                await _noteRepository.Delete(id);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            _logger.LogInformation("Delete method called with id: {Id}", id);
+
+            await _noteRepository.Delete(id);
+            _logger.LogInformation("Delete method completed successfully.");
+            return Ok();
         }
     }
 }

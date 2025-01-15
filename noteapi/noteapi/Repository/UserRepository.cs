@@ -25,7 +25,7 @@ namespace noteapi.Repository
             }
         }
 
-        public async void Save(UserRequest userRequest)
+        public async Task Save(UserRequest userRequest)
         {
             var query = "insert into [user](id,username,password,date_created,date_updated) values(@Id,@userName,@password,@date_created,@date_updated)";
             using (var connection = _context.CreateConnection())
