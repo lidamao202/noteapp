@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "noteapi", "noteapi\noteapi.csproj", "{19FDF4D7-8ABF-4A4D-9ED9-5F63AD901AB9}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{62DD9FBD-A6D3-417F-962D-B965A34A9D1F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "noteApiTest", "..\noteApiTest\noteApiTest.csproj", "{CD0D8813-37A2-444E-9A0A-1A89C55E5720}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{62DD9FBD-A6D3-417F-962D-B965A34A9D1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62DD9FBD-A6D3-417F-962D-B965A34A9D1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62DD9FBD-A6D3-417F-962D-B965A34A9D1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD0D8813-37A2-444E-9A0A-1A89C55E5720}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD0D8813-37A2-444E-9A0A-1A89C55E5720}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD0D8813-37A2-444E-9A0A-1A89C55E5720}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD0D8813-37A2-444E-9A0A-1A89C55E5720}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
