@@ -67,6 +67,11 @@ namespace noteapi.Controllers
                 _logger.LogWarning("Invalid model state for username: {Username}", userRequest.UserName);
                 return BadRequest(ModelState);
             }
+            if (await _userService.UserExists(userRequest.UserName))
+            {
+                _logger.LogWarning("User already exists with username: {Username}", userRequest.UserName);
+                return Conflict("Invalid username and password.");
+            }
 
             await _userService.Register(userRequest);
             _logger.LogInformation("User {Username} registered successfully.", userRequest.UserName);

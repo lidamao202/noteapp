@@ -6,10 +6,12 @@ namespace noteapi.Middleware
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionMiddleware> _logger;
 
-        public ExceptionMiddleware(RequestDelegate next)
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -20,6 +22,7 @@ namespace noteapi.Middleware
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An unexpected error occurred."); // Log the exception
                 await HandleExceptionAsync(context, ex); // Handle exceptions globally
             }
         }

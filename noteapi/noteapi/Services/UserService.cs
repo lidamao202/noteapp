@@ -66,5 +66,10 @@ namespace noteapi.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        public async Task<bool> UserExists(string username)
+        {
+            var user = await _userRepository.Get(username);
+            return user != null;
+        }
     }
 }
