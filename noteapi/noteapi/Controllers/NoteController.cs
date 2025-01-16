@@ -93,8 +93,22 @@ namespace noteapi.Controllers
                 _logger.LogWarning("Invalid model state.");
                 return BadRequest(ModelState);
             }
+            
+            if (HttpContext.Items["JwtClaims"] is not Dictionary<string, string> claims)
+            {
+                _logger.LogWarning("No valid token found.");
+                return Unauthorized(new { Message = "No valid token found" });
+            }
 
-            await _noteRepository.Save(noteRequest);
+            var userId = claims.GetValueOrDefault("UserId");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("UserId is null or empty.");
+                return Unauthorized(new { Message = "Invalid UserId" });
+            }
+
+            await _noteRepository.Save(noteRequest,userId);
             _logger.LogInformation("Post method completed successfully.");
             return Ok();
         }
@@ -123,6 +137,25 @@ namespace noteapi.Controllers
             await _noteRepository.Delete(id);
             _logger.LogInformation("Delete method completed successfully.");
             return Ok();
+        }
+
+        private IActionResult ValidateToken()
+        {
+            if (HttpContext.Items["JwtClaims"] is not Dictionary<string, string> claims)
+            {
+                _logger.LogWarning("No valid token found.");
+                return Unauthorized(new { Message = "No valid token found" });
+            }
+
+            var userId = claims.GetValueOrDefault("UserId");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("UserId is null or empty.");
+                return Unauthorized(new { Message = "Invalid UserId" });
+            }
+
+            return Ok(userId);
         }
     }
 }

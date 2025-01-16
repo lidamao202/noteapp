@@ -26,32 +26,28 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { userStore } from '@/stores/userStore';
-import axiosInstance from '../JwtInterceptor';
 import { jwtDecode } from 'jwt-decode';
+import { login } from '@/services/apiService';
 
 export default {
   setup() {
     const router = useRouter();
-    const userStoreInstance = userStore();
+    const store = userStore();
     const userName = ref<string>('');
     const password = ref<string>('');
 
-    const onSubmit = (): void => {
-      axiosInstance.get(`/account/login?username=${userName.value}&password=${password.value}`)
-        .then(response => {
-          const decoded = jwtDecode(response.data);
-          userStoreInstance.setToken(response.data);
-          userStoreInstance.setUser({ userName: decoded.email });
-          // localStorage.setItem('jwt_token', response.data);
-          // localStorage.setItem('id', decoded.UserId);
-          // localStorage.setItem('userName', decoded.email);
-          window.location.href = "/noteList";
-          router.push({ path: '/noteList' });
-        })
-        .catch(error => {
-          console.log(error);
-        });
+    const onSubmit = async () => {
+      try {
+        const response = await login(userName.value, password.value);
+        const decoded = jwtDecode(response.data);
+        store.setToken(response.data);
+        store.setUser({ userName: decoded.email });
+        router.push({ path: '/noteList' });
+      } catch (error) {
+        console.log(error);
+      }
     };
+
 
     const onRegister = () => {
       router.push({ path: '/register' });

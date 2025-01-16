@@ -1,14 +1,19 @@
 // src/axios.js
 import axios from 'axios';
+import { useRouter } from 'vue-router';
+import { userStore } from '@/stores/userStore';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://localhost:59003/api', // Replace with your API's base URL
+  baseURL: import.meta.env.VUE_APP_API_BASE_URL || 'https://localhost:62147/api', // Use environment variable for base URL
 });
+
+
 
 // JWT Interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('jwt_token'); // or use sessionStorage depending on your preference
+    const store = userStore();
+    const token = store.token;
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -23,10 +28,13 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
+    const router = useRouter();
+    const store = userStore();
+
     if (error.response && error.response.status === 401) {
       // Handle token expiration or authentication error here
-      // For example, redirect to login page
-      // router.push('/login');  // You can use Vue Router to navigate to login
+      store.logout();
+      router.push({ name: 'login' }); // Redirect to login page
     }
     return Promise.reject(error);
   }

@@ -1,117 +1,82 @@
 <template>
     <div class="flex items-center justify-center">
-        <div class="w-full max-w-sm p-8 bg-white">
-            <el-form label-width="auto" style="max-width: 600px">
-                <el-form-item label="Title">
-                    <el-input v-model="title" />
-                </el-form-item>
-                <el-form-item label="Content">
-                    <el-input v-model="content" />
-                </el-form-item>
-
-                <el-form-item>
-                    <el-button v-if="!isView" type="primary" @click="onSubmit">Submit</el-button>
-                    <el-button type="primary" @click="onBackClick">Back</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
+      <div class="w-full max-w-sm p-8 bg-white">
+        <el-form label-width="auto" style="max-width: 600px">
+          <el-form-item label="Title">
+            <el-input v-model="form.title" />
+          </el-form-item>
+          <el-form-item label="Content">
+            <el-input v-model="form.content" />
+          </el-form-item>
+          <el-form-item>
+            <el-button v-if="!isView" type="primary" @click="onSubmit">Submit</el-button>
+            <el-button type="primary" @click="onBackClick">Back</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
     </div>
+  </template>
 
-</template>
 
-<script>
-import { reactive } from 'vue'
-import axios from 'axios';
-import { useRouter } from 'vue-router'
-import { userStore } from '@/stores/userStore'
-import axiosInstance from '../JwtInterceptor';
+<script lang="ts">
+import { reactive, onMounted, ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { getNote, createNote, updateNote } from '@/services/apiService';
 
 export default {
+  setup() {
+    const router = useRouter();
+    const route = useRoute();
+    const form = reactive({
+      id: '',
+      title: '',
+      content: ''
+    });
+    const isView = ref(route.query.isView === 'true');
 
-    data() {
-
-        //const user = userStore();
-        const userId = localStorage.getItem('id');
-        this.isView = this.$router.currentRoute._value.query.isView;
-        return {
-            id: "",
-            title: "",
-            content: "",
-            isView: true
+    const getUser = async () => {
+      const noteId = route.query.noteId;
+      if (noteId) {
+        try {
+          const response = await getNote(noteId);
+          form.id = response.data.id;
+          form.title = response.data.title;
+          form.content = response.data.content;
+        } catch (error) {
+          console.log(error);
         }
-    },
-    mounted() {
-        this.isView = this.$router.currentRoute._value.query.isView;
-        console.log(this.$router.currentRoute._value.query.isView)
-        this.getUser();
-        const userId = localStorage.getItem('id');
-        console.log("userid="+userId)
-    },
-    updated() {
-        this.isView = this.$router.currentRoute._value.query.isView;
-    },
-    methods: {
-        onSubmit: function ($event) {
-            const userId = localStorage.getItem('id');
-         
-            let noteId = this.$router.currentRoute._value.query.noteId;
-            if (noteId != undefined && noteId != "") {
-                console.log("update")
-                axiosInstance.put(`/note/${this.$router.currentRoute._value.query.noteId}`, {
-                    title: this.title,
-                    content: this.content,
-                    userId: userId,
-                }, {
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                })
-                    .then(function (response) {
-                        alert("Save successfully");
-                    })
-                    .catch((error) => { console.log(error) })
+      }
+    };
 
-            } else {
-                axiosInstance.post(`/note`, {
-                    title: this.title,
-                    content: this.content,
-                    userId: userId
-                }, {
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                })
-                    .then(function (response) {
-                        alert("Save successfully");
-                    })
-                    .catch((error) => { console.log(error) })
-            }
-
-
-        },
-        getUser: function () {
-            const userId = localStorage.getItem('id');
-            console.log(userId)
-            if (this.$router.currentRoute._value.query.noteId) {
-                axiosInstance.get(`/note/getOne/${this.$router.currentRoute._value.query.noteId}`)
-                    .then(response => {
-                        const note = response.data;
-                        this.id = note.id;
-                        this.title = note.title;
-                        this.content = note.content
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-            }
-
-        },
-        onBackClick: function ($event) {
-            this.$router.push({ name: 'notelist' })
+    const onSubmit = async () => {
+      try {
+        if (form.id) {
+          await updateNote(form.id, form);
+        } else {
+          await createNote({
+            ...form
+          });
         }
-    }
-}
+        router.push({ name: 'notelist' });
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
+    const onBackClick = () => {
+      router.push({ name: 'notelist' });
+    };
 
+    onMounted(() => {
+      getUser();
+    });
 
+    return {
+      form,
+      isView,
+      onSubmit,
+      onBackClick
+    };
+  }
+};
 </script>

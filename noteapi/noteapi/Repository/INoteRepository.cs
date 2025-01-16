@@ -4,7 +4,7 @@ namespace noteapi.Repository
 {
     public interface INoteRepository
     {
-        Task Save(NoteRequest noteRequest);
+        Task Save(NoteRequest noteRequest,string userId);
         Task Update(string id, NoteRequest noteRequest);
         Task Delete(string id);
         Task<IEnumerable<NoteResponse>> GetAll(string userId);

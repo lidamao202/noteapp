@@ -3,11 +3,8 @@
     <div class="w-full p-8">
       <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">Note</h2>
       <div class="flex items-center space-x-2">
-        <!-- Search Input -->
         <input type="text" v-model="input" placeholder="Search..."
           class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-
-        <!-- Search Button -->
         <el-button type="primary" @click="search"
           class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           Search
@@ -47,79 +44,76 @@
 
 </template>
 
-<script>
-import { reactive } from 'vue'
-import axios from 'axios';
-import { useRouter } from 'vue-router'
-import { userStore } from '@/stores/userStore'
-import axiosInstance from '../JwtInterceptor';
+<script lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { userStore } from '@/stores/userStore';
+import { getAllNotes, deleteNote, searchNotes } from '@/services/apiService';
+
 
 export default {
+  setup() {
+    const router = useRouter();
+    const store = userStore();
+    const tableData = ref([]);
+    const input = ref("");
+    const note = ref({});
 
-  data() {
-    return {
-      tableData: [],
-      input: ""
-    }
-  },
-  mounted() {
-    console.log("getAll note")
-    this.getAll();
-  },
-  methods: {
-    onAddNew: function ($event) {
-      console.log("onAddNew");
-      this.$router.push({ name: 'AddUpdateNote', isView: false })
-    },
-    deleteRow: function (index) {
-      if (confirm("Are you sure you want to delete?") == true) {
-        axiosInstance.delete(`/note/${this.tableData[index].id}`)
-          .then(response => {
-            this.getAll();
-          })
-          .catch(error => {
-            console.log(error);
-          });
+    const getAll = async () => {
+      try {
+        const response = await getAllNotes();
+        tableData.value = response.data;
+        
+      } catch (error) {
+        console.log(error);
       }
+    };
 
-    },
-    editRow: function (index) {
-      this.$router.push({ name: 'AddUpdateNote', query: { noteId: this.tableData[index].id, isView: false } })
-    },
-    viewRow: function (index) {
-      this.$router.push({ name: 'AddUpdateNote', query: { noteId: this.tableData[index].id, isView: true } })
-    },
-    getAll: function () {
-      // let user = userStore();
+    const viewRow = (index: number) => {
+      note.value = tableData.value[index];
+      router.push({ name: 'AddUpdateNote', query: { noteId: note.value.id, isView: true } });
+    };
 
-      const id = localStorage.getItem('id');
-      console.log("userid="+id)
+    const editRow = (index: number) => {
+      note.value = tableData.value[index];
+      router.push({ name: 'AddUpdateNote', query: { noteId: note.value.id, isView: false } });
+    };
 
-      axiosInstance.get(`/note/getAll/${id}`)
-        .then(response => {
-          this.tableData = response.data;
-        })
-        .catch(error => {
+    const deleteRow = async (index: number) => {
+      if (confirm("Are you sure you want to delete?")) {
+        note.value = tableData.value[index];
+        try {
+          await deleteNote(note.value.id);
+          getAll();
+        } catch (error) {
           console.log(error);
-        });
+        }
+      }
+    };
 
-    },
-    search: function () {
-      // let user = userStore();
-      // console.log(this.userId)
-      const id = localStorage.getItem('id');
-      axiosInstance.get(`/note/search?userId=${id}&title=${this.input}`)
-        .then(response => {
-          this.tableData = response.data;
-        })
-        .catch(error => {
-          console.log(error);
-        });
+    const onAddNew = () => {
+      router.push({ name: 'AddUpdateNote', query: { isView: false } });
+    };
+
+    const search= async () => {
+      const response = await searchNotes(input.value);
+      tableData.value = response.data;
+      
     }
-  }
-}
+    onMounted(() => {
+      getAll();
+    });
 
-
-
+    return {
+      tableData,
+      input,
+      viewRow,
+      editRow,
+      deleteRow,
+      onAddNew,
+      search
+    };
+  },
+};
 </script>
 

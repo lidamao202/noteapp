@@ -49,9 +49,9 @@ namespace noteapi.Repository
             }
         }
 
-        public async Task Save(NoteRequest noteRequest)
+        public async Task Save(NoteRequest noteRequest,string userId)
         {
-            var query = "INSERT INTO note (id,title,content,date_created,date_updated,userId) values(@id,@title,@content,@date_created,@date_updated,@userId)";
+            var query = "INSERT INTO note (id,title,content,date_created,date_updated,userId) values(@id,@title,@content,@date_created,@date_updated,@UserId)";
             using (var connection = _context.CreateConnection())
             {
                 await connection.ExecuteAsync(query, new
@@ -61,7 +61,7 @@ namespace noteapi.Repository
                     content = noteRequest.Content,
                     date_created=DateTime.Now,
                     date_updated = DateTime.Now,
-                    userId=noteRequest.UserId,
+                    UserId = userId,
                 });
             }
         }

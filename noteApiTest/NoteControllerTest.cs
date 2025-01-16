@@ -101,9 +101,10 @@ namespace noteApiTest
         public async Task TestPostNote_Success()
         {
             // Arrange
-            var noteRequest = new NoteRequest { Title = "New Note", Content = "New Content", UserId = "1" };
+            var noteRequest = new NoteRequest { Title = "New Note", Content = "New Content" };
+            var userId = "1";
 
-            _noteRepository.Setup(repo => repo.Save(noteRequest)).Returns(Task.CompletedTask);
+            _noteRepository.Setup(repo => repo.Save(noteRequest, userId)).Returns(Task.CompletedTask);
 
             // Act
             var result = await _noteController.Post(noteRequest);
@@ -117,7 +118,7 @@ namespace noteApiTest
         {
             // Arrange
             var noteId = "1";
-            var noteRequest = new NoteRequest { Title = "Updated Note", Content = "Updated Content", UserId = "1" };
+            var noteRequest = new NoteRequest { Title = "Updated Note", Content = "Updated Content" };
 
             _noteRepository.Setup(repo => repo.Update(noteId, noteRequest)).Returns(Task.CompletedTask);
 

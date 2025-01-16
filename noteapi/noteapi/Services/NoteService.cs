@@ -30,9 +30,9 @@ namespace noteapi.Services
             return await _noteRepository.GetOne(id);
         }
 
-        public async Task CreateNote(NoteRequest noteRequest)
+        public async Task CreateNote(NoteRequest noteRequest,string userId)
         {
-            await _noteRepository.Save(noteRequest);
+            await _noteRepository.Save(noteRequest, userId);
         }
 
         public async Task UpdateNote(string id, NoteRequest noteRequest)
@@ -44,5 +44,7 @@ namespace noteapi.Services
         {
             await _noteRepository.Delete(id);
         }
+
+
     }
 }

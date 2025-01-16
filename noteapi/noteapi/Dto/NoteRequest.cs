@@ -10,7 +10,5 @@ namespace noteapi.Dto
 
         [Required(ErrorMessage = "Content is required")]
         public required string Content { get; set; }
-
-        public required string UserId { get; set; }
     }
 }
