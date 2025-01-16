@@ -6,18 +6,13 @@ import NoteList from '../components/NoteList.vue';
 
 const store = userStore();
 const isAuthenticated = ref(false);
+isAuthenticated.value = store.isAuthenticated;
 
-
-
-onMounted(() => {
-  isAuthenticated.value = store.isAuthenticated;
-});
 </script>
 
 <template>
   <main>
-    <!-- <Login v-if="!isAuthenticated" />
-    <NoteList v-else /> -->
-    <Login/>
+    <Login v-if="!isAuthenticated" />
+    <NoteList v-else />
   </main>
 </template>

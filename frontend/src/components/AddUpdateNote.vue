@@ -12,7 +12,7 @@
         </el-form-item>
 
         <el-form-item>
-            <el-button type="primary" @click="onSubmit">Submit</el-button>
+            <el-button v-if="!isView" type="primary" @click="onSubmit">Submit</el-button>
             <el-button type="primary" @click="onBackClick">Back</el-button>
         </el-form-item>
     </el-form>
@@ -27,7 +27,9 @@ export default {
     setup() {
         const router = useRouter();
         const route = useRoute();
-
+        const isView = ref(false);
+        isView.value = route.query.isView === 'true';
+       
         // Form data
         const formData = reactive({
             title: "",
@@ -109,7 +111,8 @@ export default {
             dynamicFormRef,
             onSubmit,
             onBackClick,
-            getOneNote
+            getOneNote,
+            isView
         };
     },
 };

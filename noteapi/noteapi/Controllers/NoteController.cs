@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using noteapi.Dto;
 using noteapi.Models;
@@ -28,19 +29,13 @@ namespace noteapi.Controllers
         {
             _logger.LogInformation("GetAll method called.");
 
-            if (HttpContext.Items["JwtClaims"] is not Dictionary<string, string> claims)
+            var userIdResult = GetUserIdFromToken(HttpContext);
+            if (userIdResult is UnauthorizedObjectResult unauthorizedResult)
             {
-                _logger.LogWarning("No valid token found.");
-                return Unauthorized(new { Message = "No valid token found" });
+                return unauthorizedResult;
             }
 
-            var userId = claims.GetValueOrDefault("UserId");
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                _logger.LogWarning("UserId is null or empty.");
-                return Unauthorized(new { Message = "Invalid UserId" });
-            }
+            var userId = (userIdResult as OkObjectResult)?.Value as string;
 
             var list = await _noteRepository.GetAll(userId);
             _logger.LogInformation("GetAll method completed successfully.");
@@ -53,19 +48,13 @@ namespace noteapi.Controllers
         {
             _logger.LogInformation("Search method called with title: {Title}", title);
 
-            if (HttpContext.Items["JwtClaims"] is not Dictionary<string, string> claims)
+            var userIdResult = GetUserIdFromToken(HttpContext);
+            if (userIdResult is UnauthorizedObjectResult unauthorizedResult)
             {
-                _logger.LogWarning("No valid token found.");
-                return Unauthorized(new { Message = "No valid token found" });
+                return unauthorizedResult;
             }
 
-            var userId = claims.GetValueOrDefault("UserId");
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                _logger.LogWarning("UserId is null or empty.");
-                return Unauthorized(new { Message = "Invalid UserId" });
-            }
+            var userId = (userIdResult as OkObjectResult)?.Value as string;
 
             var list = await _noteRepository.Search(userId, title);
             _logger.LogInformation("Search method completed successfully.");
@@ -93,20 +82,14 @@ namespace noteapi.Controllers
                 _logger.LogWarning("Invalid model state.");
                 return BadRequest(ModelState);
             }
-            
-            if (HttpContext.Items["JwtClaims"] is not Dictionary<string, string> claims)
+
+            var userIdResult = GetUserIdFromToken(HttpContext);
+            if (userIdResult is UnauthorizedObjectResult unauthorizedResult)
             {
-                _logger.LogWarning("No valid token found.");
-                return Unauthorized(new { Message = "No valid token found" });
+                return unauthorizedResult;
             }
 
-            var userId = claims.GetValueOrDefault("UserId");
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                _logger.LogWarning("UserId is null or empty.");
-                return Unauthorized(new { Message = "Invalid UserId" });
-            }
+            var userId = (userIdResult as OkObjectResult)?.Value as string;
 
             await _noteRepository.Save(noteRequest,userId);
             _logger.LogInformation("Post method completed successfully.");
@@ -139,9 +122,9 @@ namespace noteapi.Controllers
             return Ok();
         }
 
-        private IActionResult ValidateToken()
+        private IActionResult GetUserIdFromToken(HttpContext httpContext)
         {
-            if (HttpContext.Items["JwtClaims"] is not Dictionary<string, string> claims)
+            if (httpContext.Items["JwtClaims"] is not Dictionary<string, string> claims)
             {
                 _logger.LogWarning("No valid token found.");
                 return Unauthorized(new { Message = "No valid token found" });

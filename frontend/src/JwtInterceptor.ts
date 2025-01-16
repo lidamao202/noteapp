@@ -5,6 +5,7 @@ import { userStore } from '@/stores/userStore';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VUE_APP_API_BASE_URL || 'https://localhost:52724/api', // Use environment variable for base URL
+  timeout: 5000, // 5 seconds
 });
 
 

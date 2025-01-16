@@ -1,10 +1,20 @@
 import { defineStore } from 'pinia';
+import { useRouter } from 'vue-router';
 
 export const userStore = defineStore('user', {
   state: () => ({
     user: null as string | null,
     token: null as string | null
   }),
+  persist: {
+    enabled: true, // Enables persistence for this store
+    strategies: [
+      {
+        key: 'user-store', // Key used in localStorage
+        storage: localStorage, // or sessionStorage
+      },
+    ],
+  },
   actions: {
 
     setUser(user:any) {
@@ -15,14 +25,13 @@ export const userStore = defineStore('user', {
       localStorage.setItem('jwt_token',token);
     },
     logout() {
-      console.log("logout");
+      const router = useRouter();
       this.user = "";
       this.token = "";
-      localStorage.removeItem('jwt_token');
+      window.location.href = "/";
     }
   },
   getters: {
-    //getToken: (state) => state.token,
     isAuthenticated: (state) => !!state.token,
   }
 });

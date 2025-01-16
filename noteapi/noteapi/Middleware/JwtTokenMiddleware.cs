@@ -48,6 +48,8 @@ namespace noteapi.Middleware
                 }
             }
 
+            context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'");
+
             // Call the next middleware in the pipeline
             await _next(context);
         }
