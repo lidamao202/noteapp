@@ -20,11 +20,15 @@ namespace noteapi.Repository
             var query = "SELECT * FROM [user] WHERE username=@username";
             using (var connection = _context.CreateConnection())
             {
-                var user = await connection.QueryFirstAsync<User>(query, new
+                var user = await connection.QueryAsync<User>(query, new
                 {
                     username = username,
                 });
-                return user;
+                if(user.Count() == 0)
+                {
+                    return null;
+                }   
+                return user.FirstOrDefault();
             }
         }
 
