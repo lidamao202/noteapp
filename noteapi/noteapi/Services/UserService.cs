@@ -32,6 +32,11 @@ namespace noteapi.Services
             return null;
         }
 
+        public async Task<IEnumerable<UserResponse>> GetAll()
+        {
+            return await _userRepository.GetAll();
+        }
+
         public async Task Register(UserRequest userRequest)
         {
             await _userRepository.Save(userRequest);

@@ -42,6 +42,19 @@ namespace noteapi.Controllers
             return Ok(token);
         }
 
+        [HttpGet]
+        [Route("getAll")]
+        [Authorize]
+        public async Task<IActionResult> GetAll()
+        {
+            _logger.LogInformation("GetAll method called.");
+
+            var users = await _userService.GetAll();
+
+            _logger.LogInformation("GetAll method completed successfully.");
+            return Ok(users);
+        }
+
         [HttpPost]
         [Route("register")]
         [AllowAnonymous]

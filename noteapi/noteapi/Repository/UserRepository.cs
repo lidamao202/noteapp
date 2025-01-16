@@ -60,5 +60,14 @@ namespace noteapi.Repository
             return null;
         }
 
+        public async Task<IEnumerable<UserResponse>> GetAll()
+        {
+            var query = "SELECT * FROM [user]";
+            using (var connection = _context.CreateConnection())
+            {
+                var user = await connection.QueryAsync<UserResponse>(query);
+                return user.ToList();
+            }
+        }
     }
 }
