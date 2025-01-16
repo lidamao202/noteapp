@@ -7,5 +7,6 @@ namespace noteapi.Repository
     {
         Task Save(UserRequest userRequest);
         Task<User> Get(string username);
+        Task<User> Login(string username, string password);
     }
 }

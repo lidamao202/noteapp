@@ -31,7 +31,6 @@ namespace noteapi.Controllers
                 _logger.LogWarning("Username or password is null or empty.");
                 return BadRequest("Username and password are required.");
             }
-
             var token = await _userService.Authenticate(username, password);
             if (token == null)
             {

@@ -22,13 +22,14 @@ namespace noteapi.Services
 
         public async Task<string> Authenticate(string username, string password)
         {
-            var user = await _userRepository.Get(username);
-            if (user == null || user.Password != password)
+            var user = await _userRepository.Login(username, password);
+            if (user != null)
             {
-                return null;
+                string token = GenerateJSONWebToken(user);
+                return token;   
             }
 
-            return GenerateJSONWebToken(user);
+            return null;
         }
 
         public async Task Register(UserRequest userRequest)
