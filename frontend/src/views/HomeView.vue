@@ -16,8 +16,8 @@ onMounted(() => {
 
 <template>
   <main>
-    <Login v-if="!isAuthenticated" />
-    <NoteList v-else />
-
+    <!-- <Login v-if="!isAuthenticated" />
+    <NoteList v-else /> -->
+    <Login/>
   </main>
 </template>
