@@ -24,7 +24,7 @@ namespace noteapi.Migrations
                 .WithColumn("id").AsString(100).NotNullable().PrimaryKey()
                 .WithColumn("userId").AsString(100).NotNullable()
                 .WithColumn("title").AsString(200).NotNullable()
-                .WithColumn("content").AsString(100).NotNullable()
+                .WithColumn("content").AsString(100).Nullable()
                 .WithColumn("date_created").AsDateTime().NotNullable()
                 .WithColumn("date_updated").AsDateTime().NotNullable();
         }

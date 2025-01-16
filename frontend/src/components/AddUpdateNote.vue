@@ -1,82 +1,116 @@
+
+
 <template>
-    <div class="flex items-center justify-center">
-      <div class="w-full max-w-sm p-8 bg-white">
-        <el-form label-width="auto" style="max-width: 600px">
-          <el-form-item label="Title">
-            <el-input v-model="form.title" />
-          </el-form-item>
-          <el-form-item label="Content">
-            <el-input v-model="form.content" />
-          </el-form-item>
-          <el-form-item>
-            <el-button v-if="!isView" type="primary" @click="onSubmit">Submit</el-button>
+    <el-form ref="dynamicFormRef" :model="formData" :rules="validationRules" label-width="100px"
+        @submit.prevent="onSubmit">
+        <el-form-item label="Title" prop="title">
+            <el-input v-model="formData.title" placeholder="Enter your title" />
+        </el-form-item>
+
+        <el-form-item label="Content" prop="content">
+            <el-input v-model="formData.content" placeholder="Enter your content" />
+        </el-form-item>
+
+        <el-form-item>
+            <el-button type="primary" @click="onSubmit">Submit</el-button>
             <el-button type="primary" @click="onBackClick">Back</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-    </div>
-  </template>
+        </el-form-item>
+    </el-form>
+</template>
 
-
-<script lang="ts">
-import { reactive, onMounted, ref } from 'vue';
+<script>
+import { reactive, onMounted, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { getNote, createNote, updateNote } from '@/services/apiService';
 
 export default {
-  setup() {
-    const router = useRouter();
-    const route = useRoute();
-    const form = reactive({
-      id: '',
-      title: '',
-      content: ''
-    });
-    const isView = ref(route.query.isView === 'true');
+    setup() {
+        const router = useRouter();
+        const route = useRoute();
 
-    const getUser = async () => {
-      const noteId = route.query.noteId;
-      if (noteId) {
-        try {
-          const response = await getNote(noteId);
-          form.id = response.data.id;
-          form.title = response.data.title;
-          form.content = response.data.content;
-        } catch (error) {
-          console.log(error);
+        // Form data
+        const formData = reactive({
+            title: "",
+            content: "",
+        });
+
+        const isTitleRequired = ref(false);
+
+        // Validation rules
+        const validationRules = reactive({
+            title: [
+                { required: true, message: "Title is required", trigger: "blur" },
+            ]
+        });
+
+        watch(isTitleRequired, (newValue) => {
+            if (newValue) {
+                validationRules.title.unshift({
+                    required: true,
+                    message: "Title is required",
+                    trigger: "blur",
+                });
+            } else {
+                validationRules.title.shift(); // Remove the "required" rule
+            }
+        });
+
+        // Form reference
+        const dynamicFormRef = ref(null);
+
+        // Form submission
+        const onSubmit = async () => {
+
+            dynamicFormRef.value.validate((valid) => {
+                if (valid) {
+                    save();
+                } else {
+                    console.error("Form validation failed");
+                }
+            });
+        };
+
+        const onBackClick = () => {
+            router.push({ name: 'notelist' });
+        };
+        const save = async () => {
+            if (formData.id) {
+                await updateNote(formData.id, formData);
+            } else {
+                await createNote({
+                    ...formData
+                });
+            }
+            router.push({ name: 'notelist' });
         }
-      }
-    };
 
-    const onSubmit = async () => {
-      try {
-        if (form.id) {
-          await updateNote(form.id, form);
-        } else {
-          await createNote({
-            ...form
-          });
-        }
-        router.push({ name: 'notelist' });
-      } catch (error) {
-        console.log(error);
-      }
-    };
+        onMounted(() => {
+            getOneNote();
+        });
 
-    const onBackClick = () => {
-      router.push({ name: 'notelist' });
-    };
+        const getOneNote = async () => {
+            const noteId = route.query.noteId;
+            if (noteId) {
+                try {
+                    const response = await getNote(noteId);
+                    formData.id = response.data.id;
+                    formData.title = response.data.title;
+                    formData.content = response.data.content;
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        };
 
-    onMounted(() => {
-      getUser();
-    });
-
-    return {
-      form,
-      isView,
-      onSubmit,
-      onBackClick
-    };
-  }
+        return {
+            formData,
+            validationRules,
+            isTitleRequired,
+            dynamicFormRef,
+            onSubmit,
+            onBackClick,
+            getOneNote
+        };
+    },
 };
 </script>

@@ -1,15 +1,23 @@
 <script setup lang="ts">
-import Login from '../components/Login.vue'
-import NoteList from '../components/NoteList.vue'
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { userStore } from '@/stores/userStore';
+import Login from '../components/Login.vue';
+import NoteList from '../components/NoteList.vue';
 
+const store = userStore();
 const isAuthenticated = ref(false);
-isAuthenticated.value = localStorage.getItem('jwt_token') != undefined;
+
+
+
+onMounted(() => {
+  isAuthenticated.value = store.isAuthenticated;
+});
 </script>
 
 <template>
   <main>
     <Login v-if="!isAuthenticated" />
-    <NoteList v-else/>
+    <NoteList v-else />
+
   </main>
 </template>

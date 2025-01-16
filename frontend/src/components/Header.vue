@@ -18,7 +18,7 @@ export default {
     const router = useRouter();
     const store = userStore();
     const isAuthenticated = ref<boolean>(false);
-    
+        isAuthenticated.value = store.isAuthenticated;
 
     const onLogout = () => {
       store.logout(); 

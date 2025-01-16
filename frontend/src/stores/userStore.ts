@@ -12,15 +12,19 @@ export const userStore = defineStore('user', {
     },
     setToken(token: string) {
       this.token = token;
+      localStorage.setItem('jwt_token',token);
     },
     logout() {
+      console.log("logout");
       this.user = "";
       this.token = "";
-      //localStorage.removeItem('jwt_token');
+      localStorage.removeItem('jwt_token');
     }
   },
   getters: {
     //getToken: (state) => state.token,
-    isAuthenticated: (state) => !!state.token
+    isAuthenticated: (state) => !!state.token,
   }
 });
+
+

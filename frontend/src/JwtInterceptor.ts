@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { userStore } from '@/stores/userStore';
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VUE_APP_API_BASE_URL || 'https://localhost:62147/api', // Use environment variable for base URL
+  baseURL: import.meta.env.VUE_APP_API_BASE_URL || 'https://localhost:52724/api', // Use environment variable for base URL
 });
 
 

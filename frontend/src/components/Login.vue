@@ -40,9 +40,10 @@ export default {
       try {
         const response = await login(userName.value, password.value);
         const decoded = jwtDecode(response.data);
-        store.setToken(response.data);
+        store.setToken(response.data,10);
         store.setUser({ userName: decoded.email });
-        router.push({ path: '/noteList' });
+        //window.location.href = '/notelist';
+        router.push({ path: '/notelist' });
       } catch (error) {
         console.log(error);
       }
