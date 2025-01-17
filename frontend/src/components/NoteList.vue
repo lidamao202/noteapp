@@ -3,9 +3,10 @@
     <div class="w-full p-8">
       <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">Note</h2>
       <div class="flex items-center space-x-2">
-        <input type="text" v-model="input" placeholder="Search..."
-          class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-        <el-button type="primary" @click="search"
+        <el-input type="text" v-model="input" placeholder="Search..." class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500
+          focus:border-indigo-500" />
+
+        <el-button id="search-id" type="primary" @click="search"
           class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           Search
         </el-button>
@@ -63,7 +64,7 @@ export default {
       try {
         const response = await getAllNotes();
         tableData.value = response.data;
-        
+
       } catch (error) {
         console.log(error);
       }
@@ -95,10 +96,10 @@ export default {
       router.push({ name: 'AddUpdateNote', query: { isView: false } });
     };
 
-    const search= async () => {
+    const search = async () => {
       const response = await searchNotes(input.value);
       tableData.value = response.data;
-      
+
     }
     onMounted(() => {
       getAll();
@@ -116,4 +117,3 @@ export default {
   },
 };
 </script>
-

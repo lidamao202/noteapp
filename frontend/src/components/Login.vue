@@ -1,26 +1,25 @@
-
-
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="w-full max-w-sm p-8 bg-white rounded-lg shadow-lg">
       <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">Login</h2>
       <el-form ref="dynamicFormRef" :model="formData" :rules="validationRules" @submit.prevent="onSubmit">
         <el-form-item label="Username" prop="username">
-          <el-input v-model="formData.userName" placeholder="Enter your username" />
+          <el-input id="username-id" v-model="formData.userName" placeholder="Enter your username" />
         </el-form-item>
 
         <el-form-item label="Password" prop="password">
-          <el-input v-model="formData.password" type="password" placeholder="Enter your password" />
+          <el-input id="password-id" v-model="formData.password" type="password" placeholder="Enter your password" />
         </el-form-item>
 
         <el-form-item>
-          <el-button
+          <el-button id="login-id"
             class="w-full py-2 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             type="primary" @click="onSubmit">Submit</el-button>
         </el-form-item>
         <div class="mt-4 text-left">
-            <el-link type="primary" @click="onRegister" href="#" class="text-sm text-indigo-600 hover:underline">Register</el-link>
-          </div>
+          <el-link type="primary" @click="onRegister" href="#"
+            class="text-sm text-indigo-600 hover:underline">Register</el-link>
+        </div>
       </el-form>
     </div>
   </div>

@@ -7,10 +7,11 @@
   },
   "plugins": [
     {
-      "name": "SpecFlow.Plus.LivingDocPlugin",
-      "parameters": {
-        "outputFolder": "TestResults"
-      }
+      "name": "SpecFlow.NUnit",
+      "type": "Runtime"
     }
-  ]
+  ],
+  "frontend": {
+    "BaseUrl": "http://localhost:5173"
+  }
 }
