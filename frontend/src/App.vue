@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <Header />
   <RouterView />
 </template>
@@ -12,6 +12,20 @@ export default {
     Header,
     RouterView
   }
+}
+</script>
+ -->
+
+ <template>
+  <div id="app">
+    <router-view />
+  </div>
+</template>
+
+<script>
+
+export default {
+  name: 'app'
 }
 </script>
 

@@ -14,10 +14,10 @@ Scenario: Add a new note from note list page
     Then I should be navigated to the note list page
 
   Scenario: Update an existing note
-    Given I have navigated to the edit note page for "Test Note"
+    Given I have click on edit link to the note list page for "Test Note"
     When I update the note to have title "Updated Note" and content "This is an updated test note"
     Then the note should be updated successfully
 
   Scenario: View a note
-    Given I have navigated to the view note page for "Updated Note"
+    Given I have navigated to the note list page for "Updated Note"
     Then I should see the note with title "Updated Note" and content "This is an updated test note"

@@ -178,7 +178,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 17
-    testRunner.Given("I have navigated to the edit note page for \"Test Note\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+    testRunner.Given("I have click on edit link to the note list page for \"Test Note\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 18
     testRunner.When("I update the note to have title \"Updated Note\" and content \"This is an updated te" +
@@ -209,7 +209,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 22
-    testRunner.Given("I have navigated to the view note page for \"Updated Note\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+    testRunner.Given("I have navigated to the note list page for \"Updated Note\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 23
     testRunner.Then("I should see the note with title \"Updated Note\" and content \"This is an updated t" +

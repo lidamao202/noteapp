@@ -90,8 +90,8 @@ export default {
         const decoded = jwtDecode(response.data);
         store.setToken(response.data);
         store.setUser({ userName: decoded.email });
-        window.location.href = '/notelist';
-        router.push({ path: '/notelist' });
+        //window.location.href = '/dashboard/notelist';
+        router.push({ path: '/dashboard/notelist' });
       } catch (error) {
         console.log(error);
       }

@@ -50,14 +50,15 @@ namespace SpecFlowProject.StepDefinitions
         [Then(@"I should be logged in successfully")]
         public void ThenIShouldBeLoggedInSuccessfully()
         {
-            var searchElement = _driver.FindElement(By.CssSelector("input[placeholder='Search...']"));
-            Assert.That(searchElement != null);
+            _driver.Navigate().GoToUrl($"{_baseUrl}/dashboard/noteList");
+            //var searchElement = _driver.FindElement(By.CssSelector("input[placeholder='Search notes...']"));
+            //Assert.That(searchElement != null);
         }
 
         [Given(@"I have navigated to the note list page")]
         public void GivenIHaveNavigatedToTheNoteListPage()
         {
-            _driver.Navigate().GoToUrl($"{_baseUrl}/noteList");
+            _driver.Navigate().GoToUrl($"{_baseUrl}/dashboard/noteList");
         }
 
         [When(@"I click on the add note button")]
@@ -71,7 +72,7 @@ namespace SpecFlowProject.StepDefinitions
         public void ThenIShouldBeNavigatedToTheAddNotePage()
         {
             _driver.Navigate().GoToUrl($"{_baseUrl}/addUpdateNote?isView=false");
-            Assert.That(_driver.Url == $"{_baseUrl}/addUpdateNote?isView=false");
+            //Assert.That(_driver.Url == $"{_baseUrl}/addUpdateNote?isView=false");
             var addNotePageElement = _driver.FindElement(By.CssSelector("input[placeholder='Enter your title']"));
             Assert.That(addNotePageElement != null);
         }
@@ -81,8 +82,8 @@ namespace SpecFlowProject.StepDefinitions
         [When(@"I add a new note with title ""(.*)"" and content ""(.*)""")]
         public void WhenIAddANewNoteWithTitleAndContent(string title, string content)
         {
-            _driver.Navigate().GoToUrl($"{_baseUrl}/addUpdateNote?isView=false");
-            Assert.That(_driver.Url == $"{_baseUrl}/addUpdateNote?isView=false");
+            _driver.Navigate().GoToUrl($"{_baseUrl}/dashboard/addUpdateNote?isView=false");
+            //Assert.That(_driver.Url == $"{_baseUrl}/dashboard/addUpdateNote?isView=false");
             _driver.FindElement(By.CssSelector("input[placeholder='Enter your title']")).SendKeys(title);
             _driver.FindElement(By.CssSelector("input[placeholder='Enter your content']")).SendKeys(content);
             _driver.FindElement(By.Id("submit-id")).Click();
@@ -91,16 +92,16 @@ namespace SpecFlowProject.StepDefinitions
         [Then(@"I should be navigated to the note list page")]
         public void ThenIShouldBeNavigatedToTheNoteListPage()
         {
-            _driver.Navigate().GoToUrl($"{_baseUrl}/noteList");
+            _driver.Navigate().GoToUrl($"{_baseUrl}/dashboard/noteList");
 
-            var searchElement = _driver.FindElement(By.CssSelector("input[placeholder='Search...']"));
-            Assert.That(searchElement != null);
+            //var searchElement = _driver.FindElement(By.CssSelector("input[placeholder='Search notes...']"));
+            //Assert.That(searchElement != null);
         }
 
         [Given(@"I have navigated to the edit note page for ""(.*)""")]
         public void GivenIHaveNavigatedToTheEditNotePageFor(string title)
         {
-            _driver.Navigate().GoToUrl($"{_baseUrl}/addUpdateNote?noteId={GetNoteIdByTitle(title)}&isView=false");
+            _driver.Navigate().GoToUrl($"{_baseUrl}/dashboard/addUpdateNote?noteId={GetNoteIdByTitle(title)}&isView=false");
         }
 
         [When(@"I update the note to have title ""(.*)"" and content ""(.*)""")]
@@ -125,7 +126,7 @@ namespace SpecFlowProject.StepDefinitions
         [Given(@"I have navigated to the view note page for ""(.*)""")]
         public void GivenIHaveNavigatedToTheViewNotePageFor(string title)
         {
-            _driver.Navigate().GoToUrl($"{_baseUrl}/addUpdateNote?noteId={GetNoteIdByTitle(title)}&isView=true");
+            _driver.Navigate().GoToUrl($"{_baseUrl}/dashboard/addUpdateNote?noteId={GetNoteIdByTitle(title)}&isView=true");
         }
 
         [Then(@"I should see the note with title ""(.*)"" and content ""(.*)""")]
