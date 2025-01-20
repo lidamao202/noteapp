@@ -1,32 +1,14 @@
-<!-- <template>
-  <Header />
-  <RouterView />
-</template>
-
-<script lang="ts">
-import { RouterView } from 'vue-router';
-import Header from './components/Header.vue';
-
-export default {
-  components: {
-    Header,
-    RouterView
-  }
-}
-</script>
- -->
-
- <template>
+<template>
   <div id="app">
     <router-view />
   </div>
 </template>
 
-<script>
-
-export default {
-  name: 'app'
-}
+<script lang="ts">
+import { defineComponent } from 'vue';
+export default defineComponent({
+  name: 'App',
+  components: {
+  }
+});
 </script>
-
-
