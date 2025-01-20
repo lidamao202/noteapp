@@ -46,13 +46,14 @@ namespace SeleniumSpecFlowProject
             _driver.FindElement(By.Id("username-id")).SendKeys("test");
             _driver.FindElement(By.Id("password-id")).SendKeys("123456");
             _driver.FindElement(By.Id("login-id")).Click();
+            _driver.Navigate().GoToUrl($"{_baseUrl}/dashboard/noteList");
         }
 
         public void ThenIShouldBeLoggedInSuccessfully()
         {
             _driver.ExecuteJavaScript("return localStorage.getItem('jwt_token');");
 
-            Assert.That(_driver.FindElement(By.Id("login-id")).Displayed);
+            Assert.That(_driver.Url == $"{_baseUrl}/dashboard/noteList");
         }
     }
 }

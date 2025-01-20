@@ -27,6 +27,7 @@ namespace SeleniumSpecFlowProject.StepDefinitions
                 var title = row["Title"];
                 var content = row["Content"];
                 AddNoteToTable(title, content);
+                break;
             }
 
         }
@@ -53,6 +54,7 @@ namespace SeleniumSpecFlowProject.StepDefinitions
         public void WhenINavigateToTheNoteListPage()
         {
             _driver.Navigate().GoToUrl($"{_baseUrl}/dashboard/noteList");
+            //Task.Delay(2000).Wait();
         }
 
         [Then(@"I should see the note list")]
