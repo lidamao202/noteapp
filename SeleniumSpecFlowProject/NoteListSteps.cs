@@ -6,21 +6,29 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.IO;
 using TechTalk.SpecFlow;
-using OpenQA.Selenium.Support.Extensions;
-using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using TechTalk.SpecFlow.Assist;
 
-
-namespace SeleniumSpecFlowProject
+namespace SeleniumSpecFlowProject.StepDefinitions
 {
     [Binding]
-    [Scope(Feature = "AddNoteWithLogin")]
-    public class AddNoteWithLoginSteps:BaseStep
+    [Scope(Feature = "NoteList")]
+    public class NoteListSteps: BaseStep
     {
-
-        public AddNoteWithLoginSteps(IWebDriver driver, ScenarioContext scenarioContext): base(driver, scenarioContext)
+        public NoteListSteps(IWebDriver driver, ScenarioContext scenarioContext):base(driver, scenarioContext)
         {
-            
+        }
+
+        [Given(@"Set fields on view")]
+        public void GivenSetFieldsOnView(Table table)
+        {
+            foreach (var row in table.Rows)
+            {
+                var title = row["Title"];
+                var content = row["Content"];
+                AddNoteToTable(title, content);
+            }
+
         }
 
         [Given(@"I am logged in")]
@@ -31,36 +39,34 @@ namespace SeleniumSpecFlowProject
             ThenIShouldBeLoggedInSuccessfully();
         }
 
-        [When(@"I navigate to the add note page")]
-        public void WhenINavigateToTheNotesPage()
-        {
-            _driver.Navigate().GoToUrl($"{_baseUrl}/dashboard/addUpdateNote");
-            Task.Delay(2000).Wait();
-        }
 
-        [When(@"I add a new note with title ""(.*)"" and content ""(.*)""")]
-        public void WhenIAddANewNoteWithTitleAndContent(string title, string content)
+
+        private void AddNoteToTable(string title, string content)
         {
             _driver.Navigate().GoToUrl($"{_baseUrl}/dashboard/addUpdateNote?isView=false");
             _driver.FindElement(By.CssSelector("input[placeholder='Enter your title']")).SendKeys(title);
             _driver.FindElement(By.CssSelector("input[placeholder='Enter your content']")).SendKeys(content);
             _driver.FindElement(By.Id("submit-id")).Click();
-
-            // Store the note details in the scenario context
-            _scenarioContext["NoteTitle"] = title;
-            _scenarioContext["NoteContent"] = content;
         }
 
-        [Then(@"I should be navigated to the note list page")]
-        public void ThenIShouldBeNavigatedToTheNoteListPage()
+        [When(@"I navigate to the note list page")]
+        public void WhenINavigateToTheNoteListPage()
         {
             _driver.Navigate().GoToUrl($"{_baseUrl}/dashboard/noteList");
+        }
+
+        [Then(@"I should see the note list")]
+        public void ThenIShouldSeeTheNoteList()
+        {
+            Assert.That(_driver.FindElement(By.Id("noteListTable")).Displayed);
         }
 
         [Then(@"I should see the note with the title ""(.*)"" in the notes list")]
         public void ThenIShouldSeeTheNoteWithTheTitleInTheNotesList(string title)
         {
-            Assert.That(_scenarioContext["NoteTitle"], Is.EqualTo(title));
+            var noteTitle = _driver.FindElement(By.XPath($"//td[contains(text(), '{title}')]"));
+            Assert.That(noteTitle != null);
         }
     }
 }
+
